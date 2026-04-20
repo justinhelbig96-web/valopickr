@@ -3,6 +3,7 @@ import { Geist, Bebas_Neue, Rajdhani } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import PushSetup from "@/components/PushSetup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,6 +49,7 @@ export default function RootLayout({
         <Script src="//ezoicanalytics.com/analytics.js" strategy="afterInteractive" />
       </head>
       <body className="min-h-full flex flex-col">
+        <PushSetup />
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
