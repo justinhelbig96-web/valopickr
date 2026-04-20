@@ -138,7 +138,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center px-4 pt-28 pb-16 text-center" style={{ zIndex: 1 }}>
+      <section className="relative flex flex-col items-center justify-center px-4 pt-40 pb-16 text-center" style={{ zIndex: 1 }}>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
           {/* Badge */}
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
