@@ -57,11 +57,9 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
         { event: "INSERT", schema: "public", table: "messages", filter: `match_id=eq.${match.id}` },
         (payload) => {
           const newMsg = payload.new as Message
-          // Nur hinzufügen wenn nicht schon optimistisch vorhanden
-          setMessages((prev) => {
-            if (prev.find((m) => m.id === newMsg.id)) return prev
-            return [...prev, newMsg]
-          })
+          // Eigene Nachrichten bereits optimistisch vorhanden, nur fremde hinzufügen
+          if (newMsg.sender_id === myId) return
+          setMessages((prev) => [...prev, newMsg])
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50)
         }
       )
