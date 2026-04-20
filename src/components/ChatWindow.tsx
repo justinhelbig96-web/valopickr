@@ -37,7 +37,7 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
   const [copied, setCopied] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const supabase = createClient()
+  const supabase = useRef(createClient()).current
   const rankColor = getRankColor(partner.rank_tier ?? "iron")
 
   useEffect(() => {
@@ -56,7 +56,12 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
       .on("postgres_changes",
         { event: "INSERT", schema: "public", table: "messages", filter: `match_id=eq.${match.id}` },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message])
+          const newMsg = payload.new as Message
+          // Nur hinzufügen wenn nicht schon optimistisch vorhanden
+          setMessages((prev) => {
+            if (prev.find((m) => m.id === newMsg.id)) return prev
+            return [...prev, newMsg]
+          })
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50)
         }
       )
@@ -71,6 +76,19 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
     setSending(true)
     const content = text.trim()
     setText("")
+
+    // Optimistisch sofort anzeigen
+    const optimisticMsg: Message = {
+      id: `optimistic-${Date.now()}`,
+      match_id: match.id,
+      sender_id: myId,
+      content,
+      read: false,
+      created_at: new Date().toISOString(),
+    }
+    setMessages((prev) => [...prev, optimisticMsg])
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50)
+
     await supabase.from("messages").insert({ match_id: match.id, sender_id: myId, content })
     setSending(false)
     inputRef.current?.focus()
