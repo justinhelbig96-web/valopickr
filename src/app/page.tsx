@@ -1,10 +1,13 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { ChevronRight, Star, Zap, Shield, Users } from "lucide-react"
 import { useRankIcons } from "@/components/RankIcon"
 import { getTierIcon, getRankIcon } from "@/lib/rankIcons"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { LOCALES } from "@/lib/translations"
 
 const RANKS = [
   { label: "Iron", color: "#8B7355" },
@@ -16,24 +19,6 @@ const RANKS = [
   { label: "Ascendant", color: "#00FF7F" },
   { label: "Immortal", color: "#FF4655" },
   { label: "Radiant", color: "#FFFB8F" },
-]
-
-const STEPS = [
-  {
-    number: "01", icon: Shield, color: "#ff4655",
-    title: "Account verknüpfen",
-    desc: "Verbinde deinen Riot-Account. Deine Stats, Rank und K/D werden automatisch geladen.",
-  },
-  {
-    number: "02", icon: Zap, color: "#FFD700",
-    title: "Filter einstellen",
-    desc: "Wähle deinen Wunsch-Rank von Iron bis Radiant. Du bestimmst, mit wem du spielen willst.",
-  },
-  {
-    number: "03", icon: Users, color: "#00FF7F",
-    title: "Swipen & Matchen",
-    desc: "Rechts für Interesse, links zum Skippen. Wenn beide swipen: Match! Dann ab in den Chat.",
-  },
 ]
 
 const DIAGONAL_BARS = [
@@ -56,6 +41,10 @@ const FAKE_CARDS = [
 
 export default function HomePage() {
   const rankIcons = useRankIcons()
+  const { locale, setLocale, t } = useLanguage()
+  const STEP_ICONS = [Shield, Zap, Users]
+  const STEP_COLORS = ["#ff4655", "#FFD700", "#00FF7F"]
+  const STEP_NUMS = ["01", "02", "03"]
   return (
     <main className="flex flex-col min-h-screen grid-bg">
       {/* ===== VIDEO BACKGROUND ===== */}
@@ -109,9 +98,11 @@ export default function HomePage() {
       </div>
 
       {/* Nav */}
-      <nav className="glass sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b"
+      <nav className="glass sticky top-0 z-50 flex items-center justify-between px-6 py-3 border-b"
         style={{ borderColor: "var(--border)" }}>
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
+          className="flex items-center gap-3">
+          <Image src="/logo.png" alt="ValoMate Logo" width={40} height={40} className="rounded-lg" />
           <span className="font-black text-xl tracking-tight">
             <span style={{ color: "var(--accent)" }}>VALO</span>
             <span style={{ color: "var(--foreground)" }}>MATE</span>
@@ -119,12 +110,29 @@ export default function HomePage() {
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
           className="flex items-center gap-3">
+          {/* Language Switcher */}
+          <div className="flex items-center gap-1 rounded-xl p-1" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}>
+            {LOCALES.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLocale(l.code)}
+                className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all"
+                style={{
+                  background: locale === l.code ? "rgba(255,70,85,0.2)" : "transparent",
+                  color: locale === l.code ? "var(--accent)" : "var(--muted)",
+                  border: locale === l.code ? "1px solid rgba(255,70,85,0.3)" : "1px solid transparent",
+                }}
+              >
+                {l.flag} {l.label}
+              </button>
+            ))}
+          </div>
           <Link href="/auth/login" className="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-80"
             style={{ color: "var(--muted)", border: "1px solid var(--border)" }}>
-            Anmelden
+            {t.nav.login}
           </Link>
           <Link href="/auth/register" className="btn-primary px-5 py-2 text-sm">
-            Kostenlos starten
+            {t.nav.register}
           </Link>
         </motion.div>
       </nav>
@@ -136,33 +144,33 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-8"
             style={{ background: "rgba(255,70,85,0.1)", border: "1px solid rgba(255,70,85,0.3)", color: "var(--accent)" }}>
-            <Star size={12} fill="currentColor" /> Tinder für Valorant Spieler
+            <Star size={12} fill="currentColor" /> {t.hero.badge}
           </motion.div>
 
           <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none mb-6">
             <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="block text-white">
-              Finde deinen
+              {t.hero.line1}
             </motion.span>
             <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="block shimmer-text">
-              Perfect Duo
+              {t.hero.line2}
             </motion.span>
           </h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="text-lg md:text-xl max-w-md mx-auto mb-10 leading-relaxed"
             style={{ color: "var(--muted)" }}>
-            Schluss mit toxischen Randoms. Swipt durch Spieler deines Ranks, matched und spielt zusammen.
+            {t.hero.sub}
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/auth/register" className="btn-primary flex items-center gap-2 px-8 py-4 text-base rounded-xl">
-              Jetzt kostenlos starten <ChevronRight size={18} />
+              {t.hero.cta} <ChevronRight size={18} />
             </Link>
             <Link href="/auth/login" className="text-sm font-medium" style={{ color: "var(--muted)" }}>
-              Schon Account? Anmelden →
+              {t.hero.ctaSub}
             </Link>
           </motion.div>
         </motion.div>
@@ -245,27 +253,31 @@ export default function HomePage() {
       <section className="relative px-4 py-28 max-w-5xl mx-auto w-full" style={{ zIndex: 1 }}>
         <div className="text-center mb-16">
           <span className="text-xs font-bold tracking-widest uppercase mb-4 block" style={{ color: "var(--accent)" }}>
-            So funktioniert es
+            {t.howTitle}
           </span>
-          <h2 className="text-4xl md:text-5xl font-black">In 3 Schritten zum Duo</h2>
+          <h2 className="text-4xl md:text-5xl font-black">{t.howSub}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {STEPS.map((step, i) => (
-            <motion.div key={step.number}
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.12, duration: 0.45 }}
-              className="relative p-6 rounded-2xl card-hover"
-              style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <div className="absolute top-4 right-4 text-5xl font-black select-none"
-                style={{ color: `${step.color}10` }}>{step.number}</div>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                style={{ background: `${step.color}15`, border: `1px solid ${step.color}30` }}>
-                <step.icon size={22} style={{ color: step.color }} />
-              </div>
-              <h3 className="text-lg font-black mb-2">{step.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{step.desc}</p>
-            </motion.div>
-          ))}
+          {t.steps.map((step: { title: string; desc: string }, i: number) => {
+            const Icon = STEP_ICONS[i]
+            const color = STEP_COLORS[i]
+            return (
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.12, duration: 0.45 }}
+                className="relative p-6 rounded-2xl card-hover"
+                style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="absolute top-4 right-4 text-5xl font-black select-none"
+                  style={{ color: `${color}10` }}>{STEP_NUMS[i]}</div>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                  style={{ background: `${color}15`, border: `1px solid ${color}30` }}>
+                  <Icon size={22} style={{ color }} />
+                </div>
+                <h3 className="text-lg font-black mb-2">{step.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{step.desc}</p>
+              </motion.div>
+            )
+          })}
         </div>
       </section>
 
@@ -278,19 +290,19 @@ export default function HomePage() {
             background: "linear-gradient(135deg, rgba(255,70,85,0.12), rgba(255,70,85,0.03))",
             border: "1px solid rgba(255,70,85,0.25)",
           }}>
-          <h2 className="text-3xl md:text-5xl font-black mb-4">Bereit für dein neues Duo?</h2>
+          <h2 className="text-3xl md:text-5xl font-black mb-4">{t.ctaBanner.title}</h2>
           <p className="mb-8 text-lg" style={{ color: "var(--muted)" }}>
-            Registriere dich kostenlos und finde noch heute deinen Lieblings-Teammate.
+            {t.ctaBanner.sub}
           </p>
           <Link href="/auth/register" className="btn-primary inline-flex items-center gap-2 px-10 py-4 text-lg rounded-xl">
-            Jetzt starten <ChevronRight size={20} />
+            {t.ctaBanner.cta} <ChevronRight size={20} />
           </Link>
         </motion.div>
       </section>
 
       <footer className="relative text-center py-8 text-xs"
         style={{ color: "#2a2a2a", borderTop: "1px solid var(--border)", zIndex: 1 }}>
-        ValoMate — Kein offizielles Riot Games Produkt
+        {t.footer}
       </footer>
     </main>
   )
