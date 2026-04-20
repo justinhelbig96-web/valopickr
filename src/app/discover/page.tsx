@@ -59,17 +59,64 @@ export default function DiscoverPage() {
     if (allowedTiers.length < RANKS.length) query = query.in("rank_tier", allowedTiers)
 
     const { data } = await query.limit(20)
-    setProfiles(
-      (data ?? []).map((p: Record<string, unknown>) => ({
-        ...(p as Profile),
-        stats: Array.isArray(p.valorant_stats) ? (p.valorant_stats[0] as ValorantStats ?? null) : null,
-      }))
-    )
+    const mapped: ProfileWithStats[] = (data ?? []).map((p: Record<string, unknown>) => ({
+      ...(p as Profile),
+      stats: Array.isArray(p.valorant_stats) ? (p.valorant_stats[0] as ValorantStats ?? null) : null,
+    }))
+    setProfiles(mapped)
     setCurrentIndex(0)
     setSwipeDir(null)
     swipingRef.current = false
     setLoading(false)
+
+    // Auto-fetch stats for profiles that have riot_name but no stats yet
+    const missing = mapped.filter((p) => p.riot_name && p.riot_tag && !p.stats)
+    if (missing.length > 0) {
+      autoFetchStats(missing, supabase)
+    }
   }, [rankFilter])
+
+  async function autoFetchStats(profiles: ProfileWithStats[], supabase: ReturnType<typeof createClient>) {
+    for (const p of profiles) {
+      if (!p.riot_name || !p.riot_tag) continue
+      try {
+        const region = p.region?.toLowerCase() ?? "eu"
+        const res = await fetch(
+          `/api/valorant/player?name=${encodeURIComponent(p.riot_name)}&tag=${encodeURIComponent(p.riot_tag)}&region=${region}`
+        )
+        if (!res.ok) continue
+        const data = await res.json()
+        if (!data.stats) continue
+
+        const statsRow = {
+          user_id: p.id,
+          wins: data.stats.wins ?? 0,
+          losses: data.stats.losses ?? 0,
+          kd_ratio: data.stats.kd ?? 0,
+          headshot_rate: data.stats.headshotRate ?? 0,
+          avg_score: data.stats.avgScore ?? 0,
+          matches_played: data.stats.matchesPlayed ?? 0,
+          playtime_hours: 0,
+          updated_at: new Date().toISOString(),
+        }
+
+        await supabase
+          .from("valorant_stats")
+          .upsert(statsRow, { onConflict: "user_id" })
+
+        // Update local state so UI updates immediately
+        setProfiles((prev) =>
+          prev.map((pr) =>
+            pr.id === p.id
+              ? { ...pr, stats: { ...statsRow, id: pr.id } as ValorantStats }
+              : pr
+          )
+        )
+      } catch {
+        // silently skip if fetch fails for one profile
+      }
+    }
+  }
 
   useEffect(() => { fetchProfiles() }, [fetchProfiles])
 
@@ -306,17 +353,27 @@ export default function DiscoverPage() {
                   {/* Stats — always visible */}
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { label: "K/D", value: currentProfile.stats?.kd_ratio != null ? currentProfile.stats.kd_ratio.toFixed(2) : "--", good: Number(currentProfile.stats?.kd_ratio) >= 1 },
-                      { label: "HS%", value: currentProfile.stats?.headshot_rate != null ? `${currentProfile.stats.headshot_rate.toFixed(1)}%` : "--", good: Number(currentProfile.stats?.headshot_rate) >= 20 },
-                      { label: "Wins", value: currentProfile.stats?.wins != null ? currentProfile.stats.wins : "--", good: false },
+                      { label: "K/D", value: currentProfile.stats?.kd_ratio != null ? currentProfile.stats.kd_ratio.toFixed(2) : null, good: Number(currentProfile.stats?.kd_ratio) >= 1 },
+                      { label: "HS%", value: currentProfile.stats?.headshot_rate != null ? `${currentProfile.stats.headshot_rate.toFixed(1)}%` : null, good: Number(currentProfile.stats?.headshot_rate) >= 20 },
+                      { label: "Wins", value: currentProfile.stats?.wins != null ? String(currentProfile.stats.wins) : null, good: false },
                     ].map((s) => (
                       <div key={s.label} className="text-center py-2.5 rounded-xl"
                         style={{ background: "#0a0a12", border: `1px solid ${s.good ? rankColor + "30" : "var(--border)"}` }}>
                         <p className="text-[10px] mb-0.5" style={{ color: "#555" }}>{s.label}</p>
-                        <p className="text-sm font-black" style={{ color: s.good ? rankColor : s.value === "--" ? "#444" : "var(--foreground)" }}>{s.value}</p>
+                        {s.value !== null ? (
+                          <p className="text-sm font-black" style={{ color: s.good ? rankColor : "var(--foreground)" }}>{s.value}</p>
+                        ) : currentProfile.riot_name ? (
+                          <div className="h-3.5 w-8 mx-auto rounded animate-pulse mt-0.5" style={{ background: "#1e1e2e" }} />
+                        ) : (
+                          <p className="text-sm font-black" style={{ color: "#444" }}>--</p>
+                        )}
                       </div>
                     ))}
                   </div>
+                  {/* Loading hint when stats are being fetched */}
+                  {!currentProfile.stats && currentProfile.riot_name && (
+                    <p className="text-[10px] text-center" style={{ color: "#444" }}>Stats werden geladen…</p>
+                  )}
                   {/* Agent mains under stats if present */}
                   {!currentProfile.stats && currentProfile.agent_mains && currentProfile.agent_mains.length > 0 && (
                     <div className="flex gap-2 flex-wrap">
