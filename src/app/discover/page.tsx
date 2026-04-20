@@ -493,7 +493,7 @@ export default function DiscoverPage() {
 
       <AnimatePresence>
         {matchedProfile && (
-          <MatchModal profile={matchedProfile} onClose={() => setMatchedProfile(null)} />
+          <MatchModal profile={matchedProfile} myProfile={myProfile} onClose={() => setMatchedProfile(null)} />
         )}
       </AnimatePresence>
     </div>
