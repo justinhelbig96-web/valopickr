@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { toUserId, direction } = body
+  const toUserId: string = body.toUserId
+  const direction: 'left' | 'right' = body.direction
 
   if (!toUserId || !direction || !["left", "right"].includes(direction)) {
     return NextResponse.json({ error: "Ungültige Anfrage" }, { status: 400 })
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
   // Swipe speichern (upsert verhindert Duplikate)
   const { error: swipeError } = await supabase
     .from("swipes")
-    .upsert({ from_user_id: user.id, to_user_id: toUserId, direction })
+    .upsert({ from_user_id: user.id, to_user_id: toUserId as string, direction: direction as 'left' | 'right' })
 
   if (swipeError) {
     return NextResponse.json({ error: "Fehler beim Swipen" }, { status: 500 })

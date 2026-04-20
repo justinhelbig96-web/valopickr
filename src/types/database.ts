@@ -54,7 +54,8 @@ export interface Database {
           playstyle?: string | null
           last_synced_at?: string | null
         }
-        Update: Partial<Database['public']['Tables']['profiles']['Insert']>
+        Update: Partial<Database['public']['Tables']['profiles']['Insert']> & { updated_at?: string }
+        Relationships: []
       }
       valorant_stats: {
         Row: {
@@ -69,6 +70,31 @@ export interface Database {
           playtime_hours: number
           updated_at: string
         }
+        Insert: {
+          id?: string
+          user_id: string
+          wins?: number
+          losses?: number
+          kd_ratio?: number
+          headshot_rate?: number
+          avg_score?: number
+          matches_played?: number
+          playtime_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          wins?: number
+          losses?: number
+          kd_ratio?: number
+          headshot_rate?: number
+          avg_score?: number
+          matches_played?: number
+          playtime_hours?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       swipes: {
         Row: {
@@ -79,10 +105,18 @@ export interface Database {
           created_at: string
         }
         Insert: {
+          id?: string
           from_user_id: string
           to_user_id: string
           direction: 'left' | 'right'
         }
+        Update: {
+          id?: string
+          from_user_id?: string
+          to_user_id?: string
+          direction?: 'left' | 'right'
+        }
+        Relationships: []
       }
       matches: {
         Row: {
@@ -91,6 +125,17 @@ export interface Database {
           user2_id: string
           created_at: string
         }
+        Insert: {
+          id?: string
+          user1_id: string
+          user2_id: string
+        }
+        Update: {
+          id?: string
+          user1_id?: string
+          user2_id?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {
@@ -102,12 +147,24 @@ export interface Database {
           created_at: string
         }
         Insert: {
+          id?: string
           match_id: string
           sender_id: string
           content: string
+          read?: boolean
         }
+        Update: {
+          id?: string
+          match_id?: string
+          sender_id?: string
+          content?: string
+          read?: boolean
+        }
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
   }
 }
 
