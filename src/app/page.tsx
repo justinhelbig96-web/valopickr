@@ -102,10 +102,10 @@ export default function HomePage() {
         style={{ borderColor: "var(--border)" }}>
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
           className="flex items-center gap-3">
-          <Image src="/logo.png" alt="ValoMate Logo" width={40} height={40} className="rounded-lg" />
+          <Image src="/logo.png" alt="ValoPickr Logo" width={40} height={40} className="rounded-lg" />
           <span className="font-black text-xl tracking-tight">
             <span style={{ color: "var(--accent)" }}>VALO</span>
-            <span style={{ color: "var(--foreground)" }}>MATE</span>
+            <span style={{ color: "var(--foreground)" }}>PICKR</span>
           </span>
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}

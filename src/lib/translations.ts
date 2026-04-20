@@ -51,7 +51,7 @@ export const translations: Record<Locale, Translation> = {
       sub: "Register for free and find your favourite teammate today.",
       cta: "Get started",
     },
-    footer: "ValoMate — Not an official Riot Games product",
+    footer: "ValoPickr — Not an official Riot Games product",
   },
   de: {
     nav: {
@@ -87,7 +87,7 @@ export const translations: Record<Locale, Translation> = {
       sub: "Registriere dich kostenlos und finde noch heute deinen Lieblings-Teammate.",
       cta: "Jetzt starten",
     },
-    footer: "ValoMate — Kein offizielles Riot Games Produkt",
+    footer: "ValoPickr — Kein offizielles Riot Games Produkt",
   },
   ru: {
     nav: {
@@ -123,6 +123,6 @@ export const translations: Record<Locale, Translation> = {
       sub: "Зарегистрируйся бесплатно и найди своего напарника уже сегодня.",
       cta: "Начать",
     },
-    footer: "ValoMate — Не является официальным продуктом Riot Games",
+    footer: "ValoPickr — Не является официальным продуктом Riot Games",
   },
 }

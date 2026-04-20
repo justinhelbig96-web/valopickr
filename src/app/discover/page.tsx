@@ -112,7 +112,7 @@ export default function DiscoverPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-5 py-3.5 border-b glass sticky top-0 z-50"
         style={{ borderColor: "var(--border)" }}>
-        <Link href="/" className="font-black tracking-tighter text-xl shimmer-text">VALOMATE</Link>
+        <Link href="/" className="font-black tracking-tighter text-xl shimmer-text">VALOPICKR</Link>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowFilters(!showFilters)}
             className="p-2.5 rounded-xl transition-colors"

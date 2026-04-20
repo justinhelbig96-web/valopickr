@@ -115,7 +115,7 @@ export default function AdminPage() {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/discover" className="font-black tracking-tighter text-xl">
-              <span className="shimmer-text">VALOMATE</span>
+              <span className="shimmer-text">VALOPICKR</span>
             </Link>
             <span className="px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1"
               style={{ background: "rgba(255,70,85,0.15)", color: "var(--accent)", border: "1px solid rgba(255,70,85,0.3)" }}>

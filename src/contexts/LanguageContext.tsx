@@ -19,13 +19,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en")
 
   useEffect(() => {
-    const stored = localStorage.getItem("valomate_locale") as Locale | null
+    const stored = localStorage.getItem("valopickr_locale") as Locale | null
     if (stored && stored in translations) setLocaleState(stored)
   }, [])
 
   function setLocale(l: Locale) {
     setLocaleState(l)
-    localStorage.setItem("valomate_locale", l)
+    localStorage.setItem("valopickr_locale", l)
   }
 
   return (

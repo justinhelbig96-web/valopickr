@@ -9,7 +9,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "ValoMate — Find your Valorant Teammate",
+  title: "ValoPickr — Find your Valorant Teammate",
   description: "Find the perfect Valorant teammate. Filter by rank, swipe, match and play.",
 };
 

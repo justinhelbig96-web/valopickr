@@ -199,7 +199,7 @@ export default function ProfilePage() {
       {/* Nav */}
       <nav className="glass sticky top-0 z-50 px-6 py-4 border-b" style={{ borderColor: "var(--border)" }}>
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <Link href="/discover" className="font-black tracking-tighter text-xl shimmer-text">VALOMATE</Link>
+          <Link href="/discover" className="font-black tracking-tighter text-xl shimmer-text">VALOPICKR</Link>
           <div className="flex items-center gap-2">
             {profile?.is_admin && (
               <Link href="/admin"

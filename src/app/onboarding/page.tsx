@@ -123,7 +123,7 @@ export default function OnboardingPage() {
                 style={{ background: "rgba(255,70,85,0.1)", border: "1px solid rgba(255,70,85,0.2)" }}>
                 <span className="text-4xl">🎮</span>
               </div>
-              <h1 className="text-3xl font-black mb-3">Willkommen bei ValoMate!</h1>
+              <h1 className="text-3xl font-black mb-3">Willkommen bei ValoPickr!</h1>
               <p className="mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
                 Verknüpfe deinen Valorant-Account damit andere Spieler deine Stats sehen können — und du die ihrer potenziellen Duos.
               </p>
