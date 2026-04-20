@@ -47,6 +47,7 @@ export default function DiscoverPage() {
   const [rankFilter, setRankFilter] = useState<{ min: string; max: string }>({ min: "iron", max: "radiant" })
   const [myProfile, setMyProfile] = useState<Profile | null>(null)
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
+  const [newMatchCount, setNewMatchCount] = useState(0)
   const swipingRef = useRef(false)
   const myIdRef = useRef<string | null>(null)
 
@@ -149,6 +150,25 @@ export default function DiscoverPage() {
 
   useEffect(() => { fetchProfiles() }, [fetchProfiles])
 
+  // Badge: count new matches since last visit to /matches
+  useEffect(() => {
+    async function loadBadge() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const lastVisit = localStorage.getItem("lastMatchesVisit")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let query = (supabase as any)
+        .from("matches")
+        .select("id", { count: "exact", head: true })
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+      if (lastVisit) query = query.gt("created_at", lastVisit)
+      const { count } = await query
+      setNewMatchCount(count ?? 0)
+    }
+    loadBadge()
+  }, [])
+
   // Realtime: show match animation for the FIRST swiper when other person completes the match
   useEffect(() => {
     const supabase = createClient()
@@ -183,6 +203,7 @@ export default function DiscoverPage() {
               ? (raw.valorant_stats[0] ?? null)
               : null
             setMatchedProfile((prev) => prev ?? { ...raw, stats })
+            setNewMatchCount((n) => n + 1)
           }
         }
       )
@@ -240,9 +261,15 @@ export default function DiscoverPage() {
             style={{ background: showFilters ? "rgba(255,70,85,0.15)" : "var(--card)", border: `1px solid ${showFilters ? "rgba(255,70,85,0.5)" : "var(--border)"}`, color: showFilters ? "var(--accent)" : "var(--foreground)" }}>
             <Settings size={18} />
           </button>
-          <Link href="/matches" className="p-2.5 rounded-xl"
+          <Link href="/matches" className="p-2.5 rounded-xl relative"
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <MessageSquare size={18} />
+            {newMatchCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full font-black text-white"
+                style={{ background: "#FF4655", fontSize: 10, minWidth: 18, height: 18, lineHeight: 1, paddingInline: 3 }}>
+                {newMatchCount > 9 ? "9+" : newMatchCount}
+              </span>
+            )}
           </Link>
           <Link href="/leaderboard" className="p-2.5 rounded-xl" title="Leaderboard"
             style={{ background: "var(--card)", border: "1px solid rgba(255,215,0,0.4)", color: "#FFD700" }}>

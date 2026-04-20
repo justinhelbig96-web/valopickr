@@ -45,8 +45,8 @@ export default function PushSetup() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ subscription: subscription.toJSON() }),
         })
-      } catch {
-        // silently skip if push setup fails
+      } catch (err) {
+        console.error("[PushSetup] error:", err)
       }
     }
 

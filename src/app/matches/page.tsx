@@ -48,6 +48,8 @@ export default function MatchesPage() {
   const [myId, setMyId] = useState<string>("")
 
   useEffect(() => {
+    // Clear unread badge when user visits this page
+    localStorage.setItem("lastMatchesVisit", new Date().toISOString())
     async function load() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
