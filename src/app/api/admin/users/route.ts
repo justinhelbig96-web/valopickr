@@ -33,15 +33,15 @@ export async function GET() {
 
   const [{ data: profiles }, { data: swipeStats }, { data: matchStats }] = await Promise.all([
     sb.from("profiles").select("id, display_name, rank, rank_tier, region, discord_tag, riot_name, riot_tag, created_at, is_admin").order("created_at", { ascending: false }),
-    sb.from("swipes").select("swiper_id, is_like"),
+    sb.from("swipes").select("from_user_id, direction"),
     sb.from("matches").select("user1_id, user2_id"),
   ])
 
   const swipeMap: Record<string, { likes: number; passes: number }> = {}
   for (const s of swipeStats ?? []) {
-    if (!swipeMap[s.swiper_id]) swipeMap[s.swiper_id] = { likes: 0, passes: 0 }
-    if (s.is_like) swipeMap[s.swiper_id].likes++
-    else swipeMap[s.swiper_id].passes++
+    if (!swipeMap[s.from_user_id]) swipeMap[s.from_user_id] = { likes: 0, passes: 0 }
+    if (s.direction === "right") swipeMap[s.from_user_id].likes++
+    else swipeMap[s.from_user_id].passes++
   }
 
   const matchCount: Record<string, number> = {}
@@ -70,7 +70,7 @@ export async function DELETE(req: Request) {
   if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 })
 
   const sb = makeServiceClient()
-  await sb.from("swipes").delete().or(`swiper_id.eq.${userId},swiped_id.eq.${userId}`)
+  await sb.from("swipes").delete().or(`from_user_id.eq.${userId},to_user_id.eq.${userId}`)
 
   return NextResponse.json({ ok: true })
 }
