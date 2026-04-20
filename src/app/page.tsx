@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
+import { useRef, useEffect } from "react"
+import { motion, useInView, animate } from "framer-motion"
 import { ChevronRight, Star, Zap, Shield, Users } from "lucide-react"
 import { useRankIcons } from "@/components/RankIcon"
 import { getTierIcon, getRankIcon } from "@/lib/rankIcons"
@@ -38,6 +39,25 @@ const FAKE_CARDS = [
   { name: "AscendGod", rank: "Ascendant 3", tier: "ascendant", kd: "1.42", hs: "22%", color: "#00FF7F" },
   { name: "DiamondDuo", rank: "Diamond 1", tier: "diamond", kd: "1.21", hs: "19%", color: "#B9F2FF" },
 ]
+
+function CountUp({ target, suffix = "", duration = 1.5 }: { target: number; suffix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const isInView = useInView(ref, { once: true })
+
+  useEffect(() => {
+    if (!isInView) return
+    const controls = animate(0, target, {
+      duration,
+      ease: "easeOut",
+      onUpdate(v) {
+        if (ref.current) ref.current.textContent = Math.round(v) + suffix
+      },
+    })
+    return () => controls.stop()
+  }, [isInView, target, suffix, duration])
+
+  return <span ref={ref}>0{suffix}</span>
+}
 
 export default function HomePage() {
   const rankIcons = useRankIcons()
@@ -103,7 +123,7 @@ export default function HomePage() {
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
           className="flex items-center gap-3">
           <Image src="/logo.png" alt="ValoPickr Logo" width={40} height={40} className="rounded-lg" />
-          <span className="font-black text-xl tracking-tight">
+          <span className="font-bebas text-2xl tracking-widest logo-brand">
             <span style={{ color: "var(--accent)" }}>VALO</span>
             <span style={{ color: "var(--foreground)" }}>PICKR</span>
           </span>
@@ -147,7 +167,7 @@ export default function HomePage() {
             <Star size={12} fill="currentColor" /> {t.hero.badge}
           </motion.div>
 
-          <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none mb-6">
+          <h1 className="font-bebas text-7xl md:text-[8rem] tracking-wide leading-none mb-6 uppercase">
             <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="block text-white">
               {t.hero.line1}
@@ -249,13 +269,47 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* Stats Counter */}
+      <section className="relative px-4 pb-10 pt-2" style={{ zIndex: 1 }}>
+        <div className="section-divider mb-14" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-2xl mx-auto flex flex-wrap justify-center gap-12 md:gap-20"
+        >
+          {[
+            { value: 500, suffix: "+", label: "Active Players" },
+            { value: 9, suffix: "", label: "Rank Tiers" },
+            { value: 100, suffix: "%", label: "Free to Use" },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.13, duration: 0.4 }}
+              className="text-center"
+            >
+              <p className="stat-number text-5xl md:text-7xl">
+                <CountUp target={stat.value} suffix={stat.suffix} />
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-widest mt-2" style={{ color: "var(--muted)" }}>
+                {stat.label}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+        <div className="section-divider mt-14" />
+      </section>
+
       {/* How it works */}
       <section className="relative px-4 py-28 max-w-5xl mx-auto w-full" style={{ zIndex: 1 }}>
         <div className="text-center mb-16">
-          <span className="text-xs font-bold tracking-widest uppercase mb-4 block" style={{ color: "var(--accent)" }}>
+          <span className="font-rajdhani text-sm font-bold tracking-widest uppercase mb-4 block" style={{ color: "var(--accent)" }}>
             {t.howTitle}
           </span>
-          <h2 className="text-4xl md:text-5xl font-black">{t.howSub}</h2>
+          <h2 className="font-bebas text-5xl md:text-7xl tracking-wider">{t.howSub}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {t.steps.map((step: { title: string; desc: string }, i: number) => {
@@ -273,7 +327,7 @@ export default function HomePage() {
                   style={{ background: `${color}15`, border: `1px solid ${color}30` }}>
                   <Icon size={22} style={{ color }} />
                 </div>
-                <h3 className="text-lg font-black mb-2">{step.title}</h3>
+                <h3 className="font-rajdhani text-xl font-bold mb-2">{step.title}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{step.desc}</p>
               </motion.div>
             )
@@ -290,7 +344,7 @@ export default function HomePage() {
             background: "linear-gradient(135deg, rgba(255,70,85,0.12), rgba(255,70,85,0.03))",
             border: "1px solid rgba(255,70,85,0.25)",
           }}>
-          <h2 className="text-3xl md:text-5xl font-black mb-4">{t.ctaBanner.title}</h2>
+          <h2 className="font-bebas text-4xl md:text-6xl tracking-wider mb-4">{t.ctaBanner.title}</h2>
           <p className="mb-8 text-lg" style={{ color: "var(--muted)" }}>
             {t.ctaBanner.sub}
           </p>

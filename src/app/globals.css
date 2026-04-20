@@ -98,6 +98,38 @@ body {
   background-size: 40px 40px;
 }
 
+/* ===== Custom Font Utilities ===== */
+.font-bebas { font-family: var(--font-bebas), 'Impact', 'Arial Black', sans-serif; }
+.font-rajdhani { font-family: var(--font-rajdhani), 'Segoe UI', sans-serif; letter-spacing: 0.02em; }
+
+/* Logo Brand Hover */
+.logo-brand {
+  transition: letter-spacing 0.35s ease, filter 0.35s ease;
+}
+.logo-brand:hover {
+  filter: drop-shadow(0 0 12px rgba(255,70,85,0.7));
+  letter-spacing: 0.18em;
+}
+
+/* Animated Stat Numbers */
+.stat-number {
+  font-family: var(--font-bebas), 'Impact', 'Arial Black', sans-serif;
+  background: linear-gradient(135deg, #ff4655 0%, #ff8a70 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+/* Section Divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,70,85,0.28), transparent);
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
 .glass {
   background: rgba(18,18,26,0.8);
   backdrop-filter: blur(12px);
