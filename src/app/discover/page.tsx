@@ -47,7 +47,9 @@ export default function DiscoverPage() {
       .from("profiles")
       .select("*, valorant_stats(*)")
       .neq("id", user.id)
-      .not("riot_name", "is", null)
+      .not("display_name", "is", null)
+      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false })
 
     if (swipedIds.length > 0) {
       query = query.not("id", "in", `(${swipedIds.join(",")})`)
@@ -58,7 +60,7 @@ export default function DiscoverPage() {
     const allowedTiers = RANKS.slice(Math.max(0, minIdx), Math.min(RANKS.length, maxIdx + 1)).map((r) => r.tier)
     if (allowedTiers.length < RANKS.length) query = query.in("rank_tier", allowedTiers)
 
-    const { data } = await query.limit(20)
+    const { data } = await query.limit(50)
     const mapped: ProfileWithStats[] = (data ?? []).map((p: Record<string, unknown>) => ({
       ...(p as Profile),
       stats: Array.isArray(p.valorant_stats) ? (p.valorant_stats[0] as ValorantStats ?? null) : null,

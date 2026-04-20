@@ -21,10 +21,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht erlaubt" }, { status: 400 })
   }
 
-  // Swipe speichern (upsert verhindert Duplikate)
+  // Swipe speichern
   const { error: swipeError } = await supabase
     .from("swipes")
-    .upsert({ from_user_id: user.id, to_user_id: toUserId as string, direction: direction as 'left' | 'right' })
+    .upsert(
+      { from_user_id: user.id, to_user_id: toUserId as string, direction: direction as 'left' | 'right' },
+      { onConflict: "from_user_id,to_user_id" }
+    )
 
   if (swipeError) {
     return NextResponse.json({ error: "Fehler beim Swipen" }, { status: 500 })
