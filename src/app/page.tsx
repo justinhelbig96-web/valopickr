@@ -36,6 +36,18 @@ const STEPS = [
   },
 ]
 
+const DIAGONAL_BARS = [
+  { top: "4%",  thickness: 1, opacity: 0.28, blur: 2,  delay: "0s",   duration: 4   },
+  { top: "13%", thickness: 3, opacity: 0.55, blur: 8,  delay: "0.4s", duration: 5.5 },
+  { top: "24%", thickness: 1, opacity: 0.18, blur: 1,  delay: "1.2s", duration: 3.5 },
+  { top: "35%", thickness: 2, opacity: 0.42, blur: 6,  delay: "0.8s", duration: 6   },
+  { top: "48%", thickness: 1, opacity: 0.2,  blur: 2,  delay: "1.6s", duration: 4.5 },
+  { top: "60%", thickness: 3, opacity: 0.48, blur: 7,  delay: "0.2s", duration: 5   },
+  { top: "72%", thickness: 1, opacity: 0.15, blur: 1,  delay: "1s",   duration: 4   },
+  { top: "83%", thickness: 2, opacity: 0.38, blur: 5,  delay: "0.6s", duration: 5.5 },
+  { top: "94%", thickness: 1, opacity: 0.22, blur: 2,  delay: "1.4s", duration: 3.5 },
+]
+
 const FAKE_CARDS = [
   { name: "PhantomEUW", rank: "Immortal 2", tier: "immortal", kd: "1.84", hs: "28%", color: "#FF4655" },
   { name: "AscendGod", rank: "Ascendant 3", tier: "ascendant", kd: "1.42", hs: "22%", color: "#00FF7F" },
@@ -46,12 +58,54 @@ export default function HomePage() {
   const rankIcons = useRankIcons()
   return (
     <main className="flex flex-col min-h-screen grid-bg">
-      {/* Glow background */}
+      {/* ===== VIDEO BACKGROUND ===== */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
-        <div className="absolute top-0 left-0 w-[700px] h-[700px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(255,70,85,0.08) 0%, transparent 70%)", transform: "translate(-30%, -30%)" }} />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(255,70,85,0.05) 0%, transparent 70%)", transform: "translate(30%, 30%)" }} />
+        {/* Valorant Cinematic Video */}
+        <iframe
+          className="valo-bg-iframe"
+          src="https://www.youtube.com/embed/e_E9W2vsRbQ?autoplay=1&mute=1&loop=1&playlist=e_E9W2vsRbQ&controls=0&disablekb=1&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&playsinline=1"
+          allow="autoplay; encrypted-media"
+        />
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(to bottom, rgba(8,8,16,0.78) 0%, rgba(8,8,16,0.55) 40%, rgba(8,8,16,0.92) 100%)",
+          zIndex: 2,
+        }} />
+        {/* Diagonal glow bars */}
+        <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 3 }}>
+          {DIAGONAL_BARS.map((bar, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                width: "200%",
+                height: `${bar.thickness}px`,
+                background: `linear-gradient(90deg, transparent 0%, rgba(255,70,85,${bar.opacity}) 35%, rgba(255,110,120,${bar.opacity * 1.6}) 50%, rgba(255,70,85,${bar.opacity}) 65%, transparent 100%)`,
+                transform: "rotate(-45deg)",
+                left: "-50%",
+                top: bar.top,
+                filter: `blur(${bar.blur}px)`,
+                animation: `bar-pulse ${bar.duration}s ease-in-out infinite`,
+                animationDelay: bar.delay,
+              }}
+            />
+          ))}
+        </div>
+        {/* Ambient red glow */}
+        <div className="absolute inset-0" style={{ zIndex: 1 }}>
+          <div style={{
+            position: "absolute", top: "25%", left: "10%",
+            width: 600, height: 350,
+            background: "radial-gradient(ellipse, rgba(255,70,85,0.1) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }} />
+          <div style={{
+            position: "absolute", bottom: "10%", right: "5%",
+            width: 400, height: 300,
+            background: "radial-gradient(ellipse, rgba(255,70,85,0.07) 0%, transparent 70%)",
+            filter: "blur(60px)",
+          }} />
+        </div>
       </div>
 
       {/* Nav */}
