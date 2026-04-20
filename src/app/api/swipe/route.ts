@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { sendPushToUser } from "@/lib/webpush"
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { createClient: createServiceClient } = require("@supabase/supabase-js")
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -65,6 +68,26 @@ export async function POST(request: NextRequest) {
         if (matchError) {
           console.error("Match insert error:", matchError)
           return NextResponse.json({ error: "Match konnte nicht erstellt werden", detail: matchError.message }, { status: 500 })
+        }
+
+        // Send push notification to the OTHER person (first swiper) via service role
+        try {
+          const sb = createServiceClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!,
+            { auth: { autoRefreshToken: false, persistSession: false } }
+          )
+          const { data: myProfile } = await sb.from("profiles").select("display_name").eq("id", user.id).single()
+          const myName: string = myProfile?.display_name ?? "Jemand"
+          await sendPushToUser(sb, toUserId, {
+            title: "🎉 It's a Match!",
+            body: `${myName} hat dich auch geliked! Schreib ihnen jetzt.`,
+            icon: "/logo.png",
+            url: "/matches",
+            tag: "match",
+          })
+        } catch {
+          // push failure does not block the response
         }
       }
 

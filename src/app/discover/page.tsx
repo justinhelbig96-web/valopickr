@@ -36,6 +36,8 @@ function isOnline(profile: ProfileWithStats): boolean {
   return Date.now() - new Date(profile.last_seen).getTime() < 30 * 60 * 1000
 }
 
+import PushSetup from "@/components/PushSetup"
+
 export default function DiscoverPage() {
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -46,6 +48,7 @@ export default function DiscoverPage() {
   const [myProfile, setMyProfile] = useState<Profile | null>(null)
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
   const swipingRef = useRef(false)
+  const myIdRef = useRef<string | null>(null)
 
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-220, 220], [-22, 22])
@@ -61,6 +64,7 @@ export default function DiscoverPage() {
 
     const { data: me } = await supabase.from("profiles").select("*").eq("id", user.id).single()
     setMyProfile(me)
+    myIdRef.current = user.id
     void supabase.from("profiles").update({ last_seen: new Date().toISOString() }).eq("id", user.id)
 
     const { data: swipes } = await supabase.from("swipes").select("to_user_id").eq("from_user_id", user.id)
@@ -145,6 +149,48 @@ export default function DiscoverPage() {
 
   useEffect(() => { fetchProfiles() }, [fetchProfiles])
 
+  // Realtime: show match animation for the FIRST swiper when other person completes the match
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel("matches-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "matches" },
+        async (payload) => {
+          const myId = myIdRef.current
+          if (!myId) return
+          const row = payload.new as { user1_id: string; user2_id: string }
+          const partnerId = row.user1_id === myId ? row.user2_id : row.user1_id
+          if (row.user1_id !== myId && row.user2_id !== myId) return
+
+          // Only show if we're not already seeing the animation (we're the second swiper)
+          setMatchedProfile((prev) => {
+            if (prev) return prev // already showing
+            return null // will be set below
+          })
+
+          const { data: partner } = await supabase
+            .from("profiles")
+            .select("*, valorant_stats(*)")
+            .eq("id", partnerId)
+            .single()
+
+          if (partner) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const raw = partner as any
+            const stats = Array.isArray(raw.valorant_stats)
+              ? (raw.valorant_stats[0] ?? null)
+              : null
+            setMatchedProfile((prev) => prev ?? { ...raw, stats })
+          }
+        }
+      )
+      .subscribe()
+
+    return () => { void supabase.removeChannel(channel) }
+  }, [])
+
   async function triggerSwipe(direction: "left" | "right") {
     if (swipingRef.current || currentIndex >= profiles.length) return
     swipingRef.current = true
@@ -183,6 +229,7 @@ export default function DiscoverPage() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "var(--background)" }}>
+      <PushSetup />
       {/* Header */}
       <header className="flex items-center justify-between px-5 py-3.5 border-b glass sticky top-0 z-50"
         style={{ borderColor: "var(--border)" }}>
