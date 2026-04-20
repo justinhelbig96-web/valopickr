@@ -44,7 +44,7 @@ export default function AdminPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push("/auth/login"); return }
       const { data } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single()
-      if (!data?.is_admin) { router.push("/discover"); return }
+      if (!(data as { is_admin: boolean | null } | null)?.is_admin) { router.push("/discover"); return }
       await loadUsers()
     }
     check()
