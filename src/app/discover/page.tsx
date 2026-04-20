@@ -3,16 +3,38 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
-import { getRankColor, RANKS } from "@/lib/ranks"
+import { getRankColor, getRankGlow, getRankIndex, RANKS } from "@/lib/ranks"
 import RankIcon from "@/components/RankIcon"
 import type { Profile, ValorantStats } from "@/types/database"
-import { Heart, X, MessageSquare, Settings, Globe, Swords } from "lucide-react"
+import { Heart, X, MessageSquare, Settings, Globe, Swords, Trophy } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import MatchModal from "@/components/MatchModal"
 import RankFilterPanel from "@/components/RankFilterPanel"
 
 type ProfileWithStats = Profile & { stats?: ValorantStats | null }
+
+function getCompatScore(me: Profile, other: ProfileWithStats): number {
+  let score = 0
+  if (me.region && me.region === other.region) score += 30
+  if (me.rank_tier && other.rank_tier) {
+    const diff = Math.abs(getRankIndex(me.rank_tier) - getRankIndex(other.rank_tier))
+    score += Math.max(0, 30 - diff * 7)
+  }
+  if (me.playstyle && me.playstyle === other.playstyle) score += 20
+  const myL = me.languages ?? []
+  const otherL = other.languages ?? []
+  if (myL.length > 0 && otherL.length > 0) {
+    const overlap = myL.filter(l => otherL.includes(l)).length
+    score += Math.round((overlap / Math.max(myL.length, otherL.length)) * 20)
+  }
+  return Math.min(100, score)
+}
+
+function isOnline(profile: ProfileWithStats): boolean {
+  if (!profile.last_seen) return false
+  return Date.now() - new Date(profile.last_seen).getTime() < 30 * 60 * 1000
+}
 
 export default function DiscoverPage() {
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
@@ -39,6 +61,7 @@ export default function DiscoverPage() {
 
     const { data: me } = await supabase.from("profiles").select("*").eq("id", user.id).single()
     setMyProfile(me)
+    void supabase.from("profiles").update({ last_seen: new Date().toISOString() }).eq("id", user.id)
 
     const { data: swipes } = await supabase.from("swipes").select("to_user_id").eq("from_user_id", user.id)
     const swipedIds = swipes?.map((s) => s.to_user_id) ?? []
@@ -155,6 +178,8 @@ export default function DiscoverPage() {
 
   const currentProfile = profiles[currentIndex]
   const rankColor = getRankColor(currentProfile?.rank_tier ?? "iron")
+  const glow = getRankGlow(currentProfile?.rank_tier ?? "iron")
+  const compatScore = myProfile && currentProfile ? getCompatScore(myProfile, currentProfile) : null
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "var(--background)" }}>
@@ -171,6 +196,10 @@ export default function DiscoverPage() {
           <Link href="/matches" className="p-2.5 rounded-xl"
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <MessageSquare size={18} />
+          </Link>
+          <Link href="/leaderboard" className="p-2.5 rounded-xl" title="Leaderboard"
+            style={{ background: "var(--card)", border: "1px solid rgba(255,215,0,0.4)", color: "#FFD700" }}>
+            <Trophy size={18} />
           </Link>
           <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
             className="p-2.5 rounded-xl flex items-center justify-center"
@@ -234,7 +263,7 @@ export default function DiscoverPage() {
                 onAnimationComplete={onAnimationComplete}
                 onDragEnd={handleDragEnd}
                 className="relative rounded-3xl overflow-hidden cursor-grab active:cursor-grabbing select-none"
-                style={{ x, rotate, scale: cardScale, width: 420, height: 700, zIndex: 10, background: "var(--card)", border: `1px solid ${rankColor}40`, boxShadow: `0 20px 60px ${rankColor}15` } as Record<string, unknown>}
+                style={{ x, rotate, scale: cardScale, width: 420, height: 700, zIndex: 10, background: "var(--card)", border: glow.border, boxShadow: glow.boxShadow } as Record<string, unknown>}
                 whileTap={{ cursor: "grabbing" }}
               >
                 {/* LIKE stamp */}
@@ -284,6 +313,17 @@ export default function DiscoverPage() {
                   <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
                     style={{ background: "linear-gradient(to top, var(--card) 0%, transparent 100%)" }} />
 
+                  {/* Online indicator */}
+                  {isOnline(currentProfile) && (
+                    <div className="absolute bottom-4 left-4 z-10 flex items-center gap-1.5">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22c55e" }} />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "#22c55e" }} />
+                      </span>
+                      <span className="text-xs font-semibold" style={{ color: "#22c55e", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>Online</span>
+                    </div>
+                  )}
+
                   {/* Rank badge top-left (only when avatar present) */}
                   {currentProfile.avatar_url && currentProfile.rank && (
                     <div className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl backdrop-blur-md"
@@ -331,7 +371,23 @@ export default function DiscoverPage() {
                       </p>
                     )}
                   </div>
-
+                    {/* Compatibility score */}
+                    {compatScore !== null && (
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "#1a1a2e" }}>
+                          <div className="h-full rounded-full" style={{
+                            width: `${compatScore}%`,
+                            background: compatScore >= 70 ? '#22c55e' : compatScore >= 45 ? '#eab308' : '#f97316',
+                            transition: 'width 0.5s ease',
+                          }} />
+                        </div>
+                        <span className="text-xs font-bold shrink-0" style={{
+                          color: compatScore >= 70 ? '#22c55e' : compatScore >= 45 ? '#eab308' : '#f97316',
+                        }}>
+                          {compatScore}% Match
+                        </span>
+                      </div>
+                    )}
                   {/* Tags row: playstyle + languages */}
                   {((currentProfile as ProfileWithStats & { playstyle?: string; languages?: string[] }).playstyle || (currentProfile as ProfileWithStats & { playstyle?: string; languages?: string[] }).languages?.length) && (
                     <div className="flex flex-wrap gap-1.5">

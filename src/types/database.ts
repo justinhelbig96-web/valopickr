@@ -30,6 +30,8 @@ export interface Database {
           languages: string[] | null
           playstyle: string | null
           last_synced_at: string | null
+          last_seen: string | null
+          photo_urls: string[] | null
           created_at: string
           updated_at: string
         }
@@ -53,6 +55,8 @@ export interface Database {
           languages?: string[] | null
           playstyle?: string | null
           last_synced_at?: string | null
+          last_seen?: string | null
+          photo_urls?: string[] | null
         }
         Update: Partial<Database['public']['Tables']['profiles']['Insert']> & { updated_at?: string }
         Relationships: []
