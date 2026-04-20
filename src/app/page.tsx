@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { motion, useInView, animate } from "framer-motion"
 import { ChevronRight, Star, Zap, Shield, Users } from "lucide-react"
 import { useRankIcons } from "@/components/RankIcon"
@@ -62,9 +62,17 @@ function CountUp({ target, suffix = "", duration = 1.5 }: { target: number; suff
 export default function HomePage() {
   const rankIcons = useRankIcons()
   const { locale, setLocale, t } = useLanguage()
+  const [userCount, setUserCount] = useState(0)
   const STEP_ICONS = [Shield, Zap, Users]
   const STEP_COLORS = ["#ff4655", "#FFD700", "#00FF7F"]
   const STEP_NUMS = ["01", "02", "03"]
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((d) => { if (d.count > 0) setUserCount(d.count) })
+      .catch(() => {})
+  }, [])
   return (
     <main className="flex flex-col min-h-screen grid-bg">
       {/* ===== VIDEO BACKGROUND ===== */}
@@ -269,40 +277,6 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* Stats Counter */}
-      <section className="relative px-4 pb-10 pt-2" style={{ zIndex: 1 }}>
-        <div className="section-divider mb-14" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto flex flex-wrap justify-center gap-12 md:gap-20"
-        >
-          {[
-            { value: 500, suffix: "+", label: "Active Players" },
-            { value: 9, suffix: "", label: "Rank Tiers" },
-            { value: 100, suffix: "%", label: "Free to Use" },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.13, duration: 0.4 }}
-              className="text-center"
-            >
-              <p className="stat-number text-5xl md:text-7xl">
-                <CountUp target={stat.value} suffix={stat.suffix} />
-              </p>
-              <p className="text-xs font-semibold uppercase tracking-widest mt-2" style={{ color: "var(--muted)" }}>
-                {stat.label}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-        <div className="section-divider mt-14" />
-      </section>
-
       {/* How it works */}
       <section className="relative px-4 py-28 max-w-5xl mx-auto w-full" style={{ zIndex: 1 }}>
         <div className="text-center mb-16">
@@ -333,6 +307,43 @@ export default function HomePage() {
             )
           })}
         </div>
+      </section>
+
+      {/* Stats Counter — between steps and CTA */}
+      <section className="relative px-4 py-16" style={{ zIndex: 1 }}>
+        <div className="section-divider mb-14" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-2xl mx-auto flex flex-wrap justify-center gap-12 md:gap-20"
+        >
+          {[
+            { value: userCount, suffix: "", label: "Registered Players" },
+            { value: 9, suffix: "", label: "Rank Tiers" },
+            { value: 100, suffix: "%", label: "Free to Use" },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.13, duration: 0.4 }}
+              className="text-center"
+            >
+              <p className="stat-number text-5xl md:text-7xl">
+                {stat.value > 0
+                  ? <CountUp target={stat.value} suffix={stat.suffix} />
+                  : <span>…</span>
+                }
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-widest mt-2" style={{ color: "var(--muted)" }}>
+                {stat.label}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+        <div className="section-divider mt-14" />
       </section>
 
       {/* CTA Banner */}
