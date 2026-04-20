@@ -7,6 +7,7 @@ import { getRankColor, RANKS } from "@/lib/ranks"
 import RankIcon from "@/components/RankIcon"
 import type { Profile, ValorantStats } from "@/types/database"
 import { Heart, X, MessageSquare, Settings, Globe, Swords } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import MatchModal from "@/components/MatchModal"
 import RankFilterPanel from "@/components/RankFilterPanel"
@@ -269,6 +270,12 @@ export default function DiscoverPage() {
                         {currentProfile.riot_name}#{currentProfile.riot_tag}
                       </p>
                     )}
+                    {currentProfile.discord_tag && (
+                      <p className="text-xs mt-0.5 flex items-center gap-1 truncate" style={{ color: "#7289da" }}>
+                        <Image src="/discord-icon.svg" alt="Discord" width={11} height={11} style={{ opacity: 0.85 }} />
+                        {currentProfile.discord_tag}
+                      </p>
+                    )}
                   </div>
 
                   {/* Tags row: playstyle + languages */}
@@ -296,33 +303,30 @@ export default function DiscoverPage() {
                     </p>
                   )}
 
-                  {/* Stats */}
-                  {currentProfile.stats ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { label: "K/D", value: currentProfile.stats.kd_ratio?.toFixed(2), good: Number(currentProfile.stats.kd_ratio) >= 1 },
-                        { label: "HS%", value: `${currentProfile.stats.headshot_rate?.toFixed(1) ?? "0"}%`, good: Number(currentProfile.stats.headshot_rate) >= 20 },
-                        { label: "Wins", value: currentProfile.stats.wins ?? 0, good: false },
-                      ].map((s) => (
-                        <div key={s.label} className="text-center py-2.5 rounded-xl"
-                          style={{ background: "#0a0a12", border: `1px solid ${s.good ? rankColor + "30" : "var(--border)"}` }}>
-                          <p className="text-[10px] mb-0.5" style={{ color: "#555" }}>{s.label}</p>
-                          <p className="text-sm font-black" style={{ color: s.good ? rankColor : "var(--foreground)" }}>{s.value}</p>
-                        </div>
+                  {/* Stats — always visible */}
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { label: "K/D", value: currentProfile.stats?.kd_ratio != null ? currentProfile.stats.kd_ratio.toFixed(2) : "--", good: Number(currentProfile.stats?.kd_ratio) >= 1 },
+                      { label: "HS%", value: currentProfile.stats?.headshot_rate != null ? `${currentProfile.stats.headshot_rate.toFixed(1)}%` : "--", good: Number(currentProfile.stats?.headshot_rate) >= 20 },
+                      { label: "Wins", value: currentProfile.stats?.wins != null ? currentProfile.stats.wins : "--", good: false },
+                    ].map((s) => (
+                      <div key={s.label} className="text-center py-2.5 rounded-xl"
+                        style={{ background: "#0a0a12", border: `1px solid ${s.good ? rankColor + "30" : "var(--border)"}` }}>
+                        <p className="text-[10px] mb-0.5" style={{ color: "#555" }}>{s.label}</p>
+                        <p className="text-sm font-black" style={{ color: s.good ? rankColor : s.value === "--" ? "#444" : "var(--foreground)" }}>{s.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Agent mains under stats if present */}
+                  {!currentProfile.stats && currentProfile.agent_mains && currentProfile.agent_mains.length > 0 && (
+                    <div className="flex gap-2 flex-wrap">
+                      {currentProfile.agent_mains.map((a) => (
+                        <span key={a} className="px-3 py-1.5 rounded-xl text-xs font-bold"
+                          style={{ background: `${rankColor}15`, color: rankColor, border: `1px solid ${rankColor}30` }}>
+                          {a}
+                        </span>
                       ))}
                     </div>
-                  ) : (
-                    /* No stats: show agent mains as bigger badges */
-                    currentProfile.agent_mains && currentProfile.agent_mains.length > 0 ? (
-                      <div className="flex gap-2 flex-wrap">
-                        {currentProfile.agent_mains.map((a) => (
-                          <span key={a} className="px-3 py-1.5 rounded-xl text-xs font-bold"
-                            style={{ background: `${rankColor}15`, color: rankColor, border: `1px solid ${rankColor}30` }}>
-                            {a}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null
                   )}
                 </div>
               </motion.div>

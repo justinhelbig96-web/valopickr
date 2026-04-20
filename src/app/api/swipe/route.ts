@@ -45,9 +45,25 @@ export async function POST(request: NextRequest) {
     if (otherSwipe) {
       // Match anlegen (kleinere UUID zuerst für Eindeutigkeit)
       const [u1, u2] = [user.id, toUserId].sort()
-      await supabase
+
+      // Prüfen ob Match bereits existiert
+      const { data: existingMatch } = await supabase
         .from("matches")
-        .upsert({ user1_id: u1, user2_id: u2 })
+        .select("id")
+        .eq("user1_id", u1)
+        .eq("user2_id", u2)
+        .maybeSingle()
+
+      if (!existingMatch) {
+        const { error: matchError } = await supabase
+          .from("matches")
+          .insert({ user1_id: u1, user2_id: u2 })
+
+        if (matchError) {
+          console.error("Match insert error:", matchError)
+          return NextResponse.json({ error: "Match konnte nicht erstellt werden", detail: matchError.message }, { status: 500 })
+        }
+      }
 
       matched = true
     }
