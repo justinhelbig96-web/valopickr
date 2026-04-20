@@ -172,6 +172,11 @@ export default function DiscoverPage() {
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <MessageSquare size={18} />
           </Link>
+          <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
+            className="p-2.5 rounded-xl flex items-center justify-center"
+            style={{ background: "#5865F2", border: "1px solid #4752c4" }}>
+            <Image src="/discord-icon.svg" alt="Discord" width={18} height={18} style={{ filter: "brightness(0) invert(1)" }} />
+          </a>
           <Link href="/profile"
             className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black overflow-hidden"
             style={{ background: myProfile?.avatar_url ? "transparent" : "var(--accent)", color: "#fff" }}>

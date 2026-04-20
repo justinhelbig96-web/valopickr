@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import type { Match, Profile, Message } from "@/types/database"
 import { getRankColor } from "@/lib/ranks"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, MessageCircle } from "lucide-react"
 import ChatWindow from "@/components/ChatWindow"
 
@@ -114,10 +115,15 @@ export default function MatchesPage() {
         <Link href="/discover" className="p-2 rounded-xl" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
           <ArrowLeft size={18} style={{ color: "#888" }} />
         </Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-lg font-black leading-tight">Matches</h1>
           <p className="text-xs" style={{ color: "#555" }}>{matches.length} {matches.length === 1 ? "Match" : "Matches"}</p>
         </div>
+        <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
+          className="p-2.5 rounded-xl flex items-center justify-center"
+          style={{ background: "#5865F2", border: "1px solid #4752c4" }}>
+          <Image src="/discord-icon.svg" alt="Discord" width={18} height={18} style={{ filter: "brightness(0) invert(1)" }} />
+        </a>
       </header>
 
       {loading ? (
