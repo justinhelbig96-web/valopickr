@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import { getRankColor, getRankGlow, getRankIndex, RANKS } from "@/lib/ranks"
 import RankIcon from "@/components/RankIcon"
 import type { Profile, ValorantStats } from "@/types/database"
-import { Heart, X, MessageSquare, Globe, Swords, Trophy, SlidersHorizontal, Users } from "lucide-react"
+import { Heart, X, MessageSquare, Globe, Swords, Trophy, SlidersHorizontal } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import MatchModal from "@/components/MatchModal"
@@ -253,39 +253,46 @@ export default function DiscoverPage() {
   const compatScore = myProfile && currentProfile ? getCompatScore(myProfile, currentProfile) : null
 
   return (
-    <div className="flex flex-col min-h-screen dot-grid-red" style={{ background: "var(--background)", position: "relative" }}>
-      {/* Ambient glow orbs */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" style={{ zIndex: 0 }}>
-        <div style={{ position: "absolute", top: "-10%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,70,85,0.1) 0%, transparent 65%)", filter: "blur(60px)" }} />
-        <div style={{ position: "absolute", bottom: "10%", left: "-8%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,70,85,0.07) 0%, transparent 65%)", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", top: "40%", left: "50%", transform: "translateX(-50%)", width: 600, height: 300, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(255,70,85,0.04) 0%, transparent 70%)", filter: "blur(60px)" }} />
-      </div>
+    <div className="flex flex-col min-h-screen dot-grid-red" style={{ background: "var(--background)" }}>
       <PushSetup />
       {/* Header */}
-      <header className="flex items-center justify-between px-5 py-3.5 glass sticky top-0" style={{ borderColor: "var(--border)", zIndex: 50 }}>
-        <Link href="/" className="font-bebas text-2xl tracking-widest shimmer-text glow-text-red">VALOPICKR</Link>
-        <div className="flex items-center gap-2">
-          <Link href="/matches" className="p-2.5 rounded-xl relative"
-            style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <MessageSquare size={18} />
+      <header className="flex items-center justify-between px-5 py-3 glass sticky top-0 z-50"
+        style={{ borderBottom: "1px solid var(--border)" }}>
+        {/* Left: Logo */}
+        <Link href="/" className="font-bebas text-2xl tracking-widest shimmer-text glow-text-red shrink-0">VALOPICKR</Link>
+
+        {/* Center: Nav links */}
+        <nav className="flex items-center gap-1">
+          <Link href="/matches"
+            className="relative flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all hover:bg-white/5"
+            style={{ color: "var(--foreground)" }}>
+            <MessageSquare size={16} />
+            <span>Matches</span>
             {newMatchCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full font-black text-white"
-                style={{ background: "#FF4655", fontSize: 10, minWidth: 18, height: 18, lineHeight: 1, paddingInline: 3 }}>
+              <span className="flex items-center justify-center rounded-full font-black text-white"
+                style={{ background: "#FF4655", fontSize: 10, minWidth: 18, height: 18, lineHeight: 1, paddingInline: 4 }}>
                 {newMatchCount > 9 ? "9+" : newMatchCount}
               </span>
             )}
           </Link>
-          <Link href="/leaderboard" className="p-2.5 rounded-xl" title="Leaderboard"
-            style={{ background: "var(--card)", border: "1px solid rgba(255,215,0,0.4)", color: "#FFD700" }}>
-            <Trophy size={18} />
+          <Link href="/leaderboard"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all hover:bg-white/5"
+            style={{ color: "#FFD700" }}>
+            <Trophy size={16} />
+            <span>Leaderboard</span>
           </Link>
+        </nav>
+
+        {/* Right: Discord + Avatar */}
+        <div className="flex items-center gap-2 shrink-0">
           <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
-            className="p-2.5 rounded-xl flex items-center justify-center"
-            style={{ background: "#5865F2", border: "1px solid #4752c4" }}>
-            <Image src="/discord-icon.svg" alt="Discord" width={18} height={18} style={{ filter: "brightness(0) invert(1)" }} />
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+            style={{ background: "rgba(88,101,242,0.15)", border: "1px solid rgba(88,101,242,0.35)", color: "#8891f1" }}>
+            <Image src="/discord-icon.svg" alt="Discord" width={15} height={15} style={{ filter: "brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(400%) hue-rotate(200deg) brightness(90%)" }} />
+            <span className="hidden sm:inline">Discord</span>
           </a>
           <Link href="/profile"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black overflow-hidden"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black overflow-hidden ring-2 ring-transparent hover:ring-[var(--accent)] transition-all"
             style={{ background: myProfile?.avatar_url ? "transparent" : "var(--accent)", color: "#fff" }}>
             {myProfile?.avatar_url
               ? <img src={myProfile.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -331,42 +338,18 @@ export default function DiscoverPage() {
       </AnimatePresence>
 
       {/* Card Area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6" style={{ position: "relative", zIndex: 1 }}>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6">
         {loading ? (
-          <div className="flex flex-col items-center gap-5">
-            {/* Branded spinner */}
-            <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full animate-spin" style={{ border: "2px solid transparent", borderTopColor: "var(--accent)", borderRightColor: "rgba(255,70,85,0.3)" }} />
-              <div className="absolute inset-2 rounded-full animate-spin" style={{ border: "2px solid transparent", borderTopColor: "rgba(255,70,85,0.5)", animationDirection: "reverse", animationDuration: "0.8s" }} />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full" style={{ background: "var(--accent)", boxShadow: "0 0 10px var(--accent)" }} />
-              </div>
-            </div>
-            <p className="text-sm font-semibold tracking-wider uppercase" style={{ color: "#444" }}>Lade Profile</p>
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--accent)" }} />
+            <p className="text-sm" style={{ color: "#555" }}>Lade Profile...</p>
           </div>
         ) : !currentProfile ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center px-6 max-w-sm"
-          >
-            {/* Icon */}
-            <div className="mx-auto mb-6 w-20 h-20 rounded-3xl flex items-center justify-center relative"
-              style={{ background: "rgba(255,70,85,0.08)", border: "1px solid rgba(255,70,85,0.2)" }}>
-              <div className="absolute inset-0 rounded-3xl" style={{ boxShadow: "0 0 40px rgba(255,70,85,0.15)" }} />
-              <Users size={36} style={{ color: "var(--accent)", opacity: 0.9 }} />
-            </div>
-            <h3 className="font-bebas text-4xl tracking-widest mb-2 glow-text-red" style={{ color: "var(--foreground)" }}>Keine Profile mehr</h3>
-            <p className="text-sm mb-8 leading-relaxed" style={{ color: "#555" }}>Passe deine Filter an oder schau später nochmal vorbei — neue Spieler kommen täglich dazu.</p>
-            <div className="flex flex-col gap-3">
-              <button onClick={fetchProfiles} className="btn-primary px-8 py-3.5 text-sm font-bold rounded-2xl">Erneut laden</button>
-              <button onClick={() => setShowFilters(true)}
-                className="px-8 py-3 text-sm font-bold rounded-2xl transition-all"
-                style={{ border: "1px solid var(--border)", color: "#666" }}>
-                Filter anpassen
-              </button>
-            </div>
-          </motion.div>
+          <div className="text-center">
+            <p className="text-2xl font-black mb-2">Keine Profile mehr</p>
+            <p className="text-sm mb-6" style={{ color: "#888" }}>Passe deine Filter an oder komm später wieder.</p>
+            <button onClick={fetchProfiles} className="btn-primary px-6 py-3 text-sm">Erneut laden</button>
+          </div>
         ) : (
           <div className="relative flex flex-col items-center">
             {/* Background stack cards */}
@@ -583,40 +566,31 @@ export default function DiscoverPage() {
             </AnimatePresence>
 
             {/* Action Buttons */}
-            <div className="flex items-end gap-6 mt-8 relative z-20">
-              <div className="flex flex-col items-center gap-2">
-                <motion.button whileHover={{ scale: 1.1, boxShadow: "0 0 30px rgba(255,70,85,0.4)" }} whileTap={{ scale: 0.88 }}
-                  onClick={() => triggerSwipe("left")}
-                  className="w-[62px] h-[62px] rounded-full flex items-center justify-center"
-                  style={{ background: "#0d0d14", border: "2px solid rgba(255,70,85,0.6)", boxShadow: "0 4px 20px rgba(255,70,85,0.15)" }}>
-                  <X size={26} style={{ color: "#ff4655" }} />
-                </motion.button>
-                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#333" }}>Nope</span>
-              </div>
+            <div className="flex items-center gap-8 mt-8 relative z-20">
+              <motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.88 }}
+                onClick={() => triggerSwipe("left")}
+                className="w-20 h-20 rounded-full flex items-center justify-center shadow-xl"
+                style={{ background: "#0d0d14", border: "2px solid #ff4655" }}>
+                <X size={32} style={{ color: "#ff4655" }} />
+              </motion.button>
 
-              <div className="flex flex-col items-center gap-2">
-                <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}
-                  onClick={() => triggerSwipe("right")}
-                  className="w-[76px] h-[76px] rounded-full flex items-center justify-center pulse-glow"
-                  style={{ background: "linear-gradient(135deg, #ff4655, #e03545)", boxShadow: "0 8px 32px rgba(255,70,85,0.45)" }}>
-                  <Heart size={34} fill="white" style={{ color: "#fff" }} />
-                </motion.button>
-                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#ff465580" }}>Match</span>
-              </div>
+              <motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.88 }}
+                onClick={() => triggerSwipe("right")}
+                className="w-24 h-24 rounded-full flex items-center justify-center shadow-xl pulse-glow"
+                style={{ background: "linear-gradient(135deg, #ff4655, #e03545)" }}>
+                <Heart size={38} fill="white" style={{ color: "#fff" }} />
+              </motion.button>
 
-              <div className="flex flex-col items-center gap-2">
-                <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}
-                  onClick={fetchProfiles}
-                  className="w-[62px] h-[62px] rounded-full flex items-center justify-center"
-                  style={{ background: "#0d0d14", border: "2px solid var(--border)", color: "#444", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
-                  title="Neue Profile laden">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                  </svg>
-                </motion.button>
-                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#333" }}>Reload</span>
-              </div>
+              <motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.88 }}
+                onClick={fetchProfiles}
+                className="w-20 h-20 rounded-full flex items-center justify-center shadow-xl"
+                style={{ background: "#0d0d14", border: "2px solid var(--border)", color: "#555" }}
+                title="Neue Profile laden">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                </svg>
+              </motion.button>
             </div>
 
             {/* Progress dots */}
