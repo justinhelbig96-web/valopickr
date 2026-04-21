@@ -7,7 +7,7 @@ export const LOCALES: { code: Locale; label: string; flag: string }[] = [
 ]
 
 export type Translation = {
-  nav: { login: string; register: string }
+  nav: { login: string; register: string; matches: string; leaderboard: string }
   hero: { badge: string; line1: string; line2: string; sub: string; cta: string; ctaSub: string }
   howTitle: string
   howSub: string
@@ -70,6 +70,8 @@ export const translations: Record<Locale, Translation> = {
     nav: {
       login: "Sign In",
       register: "Start Free",
+      matches: "Matches",
+      leaderboard: "Leaderboard",
     },
     hero: {
       badge: "The #1 Duo Finder for Valorant",
@@ -155,6 +157,8 @@ export const translations: Record<Locale, Translation> = {
     nav: {
       login: "Anmelden",
       register: "Kostenlos starten",
+      matches: "Matches",
+      leaderboard: "Rangliste",
     },
     hero: {
       badge: "Der #1 Duo-Finder für Valorant",
@@ -240,6 +244,8 @@ export const translations: Record<Locale, Translation> = {
     nav: {
       login: "Войти",
       register: "Начать бесплатно",
+      matches: "Матчи",
+      leaderboard: "Рейтинг",
     },
     hero: {
       badge: "Лучший поиск дуо для Valorant",

@@ -159,10 +159,14 @@ export default function DiscoverPage() {
 
   useEffect(() => { fetchProfiles() }, [fetchProfiles])
 
-  // Online counter — refresh every 60 s
+  // Online counter — refresh every 60 s, update own last_seen first to avoid race
   useEffect(() => {
     async function fetchOnline() {
       const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from("profiles").update({ last_seen: new Date().toISOString() }).eq("id", user.id)
+      }
       const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
       const { count } = await supabase
         .from("profiles")
@@ -171,8 +175,8 @@ export default function DiscoverPage() {
       setOnlineCount(count ?? 0)
     }
     fetchOnline()
-    const t = setInterval(fetchOnline, 60_000)
-    return () => clearInterval(t)
+    const interval = setInterval(fetchOnline, 60_000)
+    return () => clearInterval(interval)
   }, [])
 
   // Badge: count new matches since last visit to /matches
@@ -282,13 +286,13 @@ export default function DiscoverPage() {
         {/* Left: Logo + online dot */}
         <div className="flex items-center gap-2.5 shrink-0">
           <Link href="/" className="font-bebas text-2xl tracking-widest shimmer-text glow-text-red">VALOPICKR</Link>
-          {onlineCount > 0 && (
+          {myProfile !== null && (
             <div className="flex items-center gap-1.5">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22c55e" }} />
                 <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "#22c55e" }} />
               </span>
-              <span className="text-[11px] font-semibold" style={{ color: "#22c55e" }}>{onlineCount}</span>
+              <span className="text-[11px] font-semibold" style={{ color: "#22c55e" }}>{onlineCount > 0 ? onlineCount : "—"}</span>
             </div>
           )}
         </div>
@@ -299,7 +303,7 @@ export default function DiscoverPage() {
             className="relative flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all hover:bg-white/5"
             style={{ color: "var(--foreground)" }}>
             <MessageSquare size={16} />
-            <span>Matches</span>
+            <span>{t.nav.matches}</span>
             {newMatchCount > 0 && (
               <span className="flex items-center justify-center rounded-full font-black text-white"
                 style={{ background: "#FF4655", fontSize: 10, minWidth: 18, height: 18, lineHeight: 1, paddingInline: 4 }}>
@@ -311,7 +315,7 @@ export default function DiscoverPage() {
             className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all hover:bg-white/5"
             style={{ color: "#FFD700" }}>
             <Trophy size={16} />
-            <span>Leaderboard</span>
+            <span>{t.nav.leaderboard}</span>
           </Link>
         </nav>
 
@@ -342,10 +346,17 @@ export default function DiscoverPage() {
           </a>
           <Link href="/profile"
             className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black overflow-hidden ring-2 ring-transparent hover:ring-[var(--accent)] transition-all"
-            style={{ background: myProfile?.avatar_url ? "transparent" : "var(--accent)", color: "#fff" }}>
-            {myProfile?.avatar_url
-              ? <img src={myProfile.avatar_url} alt="" className="w-full h-full object-cover" />
-              : (myProfile?.display_name?.[0]?.toUpperCase() ?? "?")}
+            style={{ background: myProfile?.avatar_url ? "transparent" : `${getRankColor(myProfile?.rank_tier ?? "iron")}25`, color: "#fff" }}>
+            {myProfile?.avatar_url ? (
+              <img src={myProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (() => {
+              const agentPortrait = myProfile?.agent_mains?.[0] ? getAgentPortrait(myProfile.agent_mains[0]) : null
+              return agentPortrait ? (
+                <img src={agentPortrait} alt="" className="w-full h-full" style={{ objectFit: "contain", objectPosition: "bottom center", transform: "scale(1.6) translateY(4px)" }} />
+              ) : (
+                <span>{myProfile?.display_name?.[0]?.toUpperCase() ?? "?"}</span>
+              )
+            })()}
           </Link>
         </div>
       </header>
