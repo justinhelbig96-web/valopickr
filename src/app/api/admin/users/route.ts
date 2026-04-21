@@ -71,7 +71,7 @@ export async function DELETE(req: Request) {
 
   const sb = makeServiceClient()
   await Promise.all([
-    sb.from("swipes").delete().or(`from_user_id.eq.${userId},to_user_id.eq.${userId}`),
+    sb.from("swipes").delete().eq("from_user_id", userId),
     sb.from("matches").delete().or(`user1_id.eq.${userId},user2_id.eq.${userId}`),
   ])
 
