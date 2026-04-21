@@ -340,16 +340,72 @@ export default function DiscoverPage() {
       {/* Card Area */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-6">
         {loading ? (
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--accent)" }} />
-            <p className="text-sm" style={{ color: "#555" }}>Lade Profile...</p>
-          </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-5">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full animate-spin"
+                style={{ border: "2px solid transparent", borderTopColor: "var(--accent)", borderRightColor: "rgba(255,70,85,0.3)" }} />
+              <div className="absolute inset-2 rounded-full animate-spin"
+                style={{ border: "2px solid transparent", borderTopColor: "rgba(255,70,85,0.5)", animationDirection: "reverse", animationDuration: "0.6s" }} />
+              <div className="absolute inset-0 flex items-center justify-center text-lg">⚔️</div>
+            </div>
+            <p className="font-bebas text-xl tracking-widest" style={{ color: "#444" }}>LADE PROFILE</p>
+          </motion.div>
         ) : !currentProfile ? (
-          <div className="text-center">
-            <p className="text-2xl font-black mb-2">Keine Profile mehr</p>
-            <p className="text-sm mb-6" style={{ color: "#888" }}>Passe deine Filter an oder komm später wieder.</p>
-            <button onClick={fetchProfiles} className="btn-primary px-6 py-3 text-sm">Erneut laden</button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative flex flex-col items-center text-center max-w-sm w-full"
+          >
+            {/* Ambient glow blobs */}
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none"
+              style={{ background: "radial-gradient(circle, rgba(255,70,85,0.12) 0%, transparent 70%)", filter: "blur(40px)" }} />
+            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full pointer-events-none"
+              style={{ background: "radial-gradient(circle, rgba(123,97,255,0.08) 0%, transparent 70%)", filter: "blur(30px)" }} />
+
+            {/* Icon */}
+            <div className="relative mb-6 w-24 h-24 rounded-3xl flex items-center justify-center"
+              style={{ background: "rgba(255,70,85,0.08)", border: "1px solid rgba(255,70,85,0.2)", boxShadow: "0 0 40px rgba(255,70,85,0.1)" }}>
+              <span className="text-5xl select-none">🃏</span>
+            </div>
+
+            {/* Rank pills row */}
+            <div className="flex gap-1.5 mb-6 flex-wrap justify-center">
+              {["🗡️", "🛡️", "⚔️", "🏆", "💎", "🔥"].map((e, i) => (
+                <motion.span key={i}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 + i * 0.07 }}
+                  className="text-xl">{e}</motion.span>
+              ))}
+            </div>
+
+            <h2 className="font-bebas text-4xl tracking-wider mb-2" style={{ color: "var(--foreground)" }}>
+              Keine Profile mehr
+            </h2>
+            <p className="text-sm mb-8 leading-relaxed" style={{ color: "#555" }}>
+              Alle verfügbaren Profile wurden geswiped.<br />Passe deine Filter an oder komm später wieder.
+            </p>
+
+            <div className="flex flex-col gap-3 w-full">
+              <button
+                onClick={fetchProfiles}
+                className="btn-primary w-full py-3.5 text-sm font-black rounded-2xl flex items-center justify-center gap-2"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
+                </svg>
+                Erneut laden
+              </button>
+              <button
+                onClick={() => setShowFilters(true)}
+                className="w-full py-3.5 text-sm font-bold rounded-2xl flex items-center justify-center gap-2 transition-all hover:bg-white/5"
+                style={{ border: "1px solid var(--border)", color: "#888" }}
+              >
+                <SlidersHorizontal size={15} />
+                Filter anpassen
+              </button>
+            </div>
+          </motion.div>
         ) : (
           <div className="relative flex flex-col items-center">
             {/* Background stack cards */}
