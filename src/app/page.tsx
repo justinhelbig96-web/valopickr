@@ -198,29 +198,24 @@ export default function HomePage() {
               className="block text-white">
               {t.hero.line1}
             </motion.span>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="flex items-center justify-center gap-2 flex-wrap">
-              {t.hero.line2prefix && (
-                <span className="text-white">{t.hero.line2prefix}</span>
-              )}
-              <div
-                className="relative"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "1.15em" }}
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={t.hero.heroWords[wordIndex]}
-                    initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, scale: 1.08, filter: "blur(6px)" }}
-                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                    className="shimmer-text glow-text-red whitespace-nowrap"
-                  >
-                    {t.hero.heroWords[wordIndex]}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
-            </motion.div>
+            <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+              className="block text-white">
+              {t.hero.line2prefix || "WITH"}
+            </motion.span>
+            <div className="flex justify-center" style={{ minHeight: "1.15em" }}>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={t.hero.heroWords[wordIndex]}
+                  initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 1.08, filter: "blur(6px)" }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="shimmer-text glow-text-red whitespace-nowrap"
+                >
+                  {t.hero.heroWords[wordIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </div>
           </h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
@@ -241,19 +236,17 @@ export default function HomePage() {
         </motion.div>
 
         {/* Floating Preview Cards */}
-        <div className="relative mt-20 w-full max-w-2xl mx-auto h-60 hidden md:flex items-start justify-center">
+        <div className="relative mt-20 w-full max-w-3xl mx-auto h-64 hidden md:flex items-start justify-center">
           {FAKE_CARDS.map((card, i) => (
             <motion.div
               key={card.name}
-              initial={{ opacity: 0, y: 40, rotate: (i - 1) * 10 }}
-              animate={{ opacity: 1, y: 0, rotate: (i - 1) * 6 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0, rotate: (i - 1) * 6, x: (i - 1) * 220 }}
               transition={{ delay: 0.6 + i * 0.15, duration: 0.5 }}
               className="absolute w-52 p-4 rounded-2xl float"
               style={{
                 background: "var(--card)",
                 border: `1px solid ${card.color}35`,
-                left: "50%",
-                transform: `translateX(${(i - 1) * 210 - 104}px)`,
                 boxShadow: `0 8px 40px ${card.color}18`,
                 animationDelay: `${i * 0.8}s`,
                 zIndex: i === 1 ? 10 : 5,

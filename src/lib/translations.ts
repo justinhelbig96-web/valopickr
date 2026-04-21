@@ -76,7 +76,7 @@ export const translations: Record<Locale, Translation> = {
     hero: {
       badge: "The #1 Duo Finder for Valorant",
       line1: "Stop Playing",
-      line2prefix: "With",
+      line2prefix: "WITH",
       heroWords: ["RANDOMS", "TOXIC MATES", "SMURFS", "LEAVERS"],
       sub: "Match with players who share your rank, playstyle, and mindset. No more excuses — just wins.",
       cta: "Find My Duo — Free",
@@ -164,7 +164,7 @@ export const translations: Record<Locale, Translation> = {
     hero: {
       badge: "Der #1 Duo-Finder für Valorant",
       line1: "Schluss mit",
-      line2prefix: "",
+      line2prefix: "MIT",
       heroWords: ["RANDOMS", "TOXIC MATES", "SMURFS", "LEAVERN"],
       sub: "Finde Mitspieler, die zu deinem Rank und Spielstil passen. Keine Ausreden mehr — nur Wins.",
       cta: "Mein Duo finden — Gratis",
