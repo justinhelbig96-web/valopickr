@@ -9,6 +9,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, MessageCircle } from "lucide-react"
 import ChatWindow from "@/components/ChatWindow"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 type MatchWithPartner = Match & { partner: Profile; lastMessage?: Message | null }
 
@@ -46,6 +47,7 @@ export default function MatchesPage() {
   const [loading, setLoading] = useState(true)
   const [activeMatch, setActiveMatch] = useState<MatchWithPartner | null>(null)
   const [myId, setMyId] = useState<string>("")
+  const { t } = useLanguage()
 
   useEffect(() => {
     // Clear unread badge when user visits this page
@@ -118,8 +120,8 @@ export default function MatchesPage() {
           <ArrowLeft size={18} style={{ color: "#888" }} />
         </Link>
         <div className="flex-1">
-          <h1 className="text-lg font-black leading-tight">Matches</h1>
-          <p className="text-xs" style={{ color: "#555" }}>{matches.length} {matches.length === 1 ? "Match" : "Matches"}</p>
+          <h1 className="text-lg font-black leading-tight">{t.matches.title}</h1>
+          <p className="text-xs" style={{ color: "#555" }}>{matches.length} {matches.length === 1 ? t.matches.matchSingular : t.matches.matchPlural}</p>
         </div>
         <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
           className="p-2.5 rounded-xl flex items-center justify-center"
@@ -138,17 +140,17 @@ export default function MatchesPage() {
             style={{ background: "rgba(255,70,85,0.1)", border: "1px solid rgba(255,70,85,0.2)" }}>
             💘
           </div>
-          <p className="text-xl font-black mb-2">Noch keine Matches</p>
-          <p className="text-sm mb-8" style={{ color: "#666" }}>Swipt weiter und findet euren Duo-Partner!</p>
+          <p className="text-xl font-black mb-2">{t.matches.emptyTitle}</p>
+          <p className="text-sm mb-8" style={{ color: "#666" }}>{t.matches.emptySub}</p>
           <Link href="/discover" className="btn-primary px-8 py-3 rounded-xl font-bold text-sm">
-            Zum Swipen
+            {t.matches.toDiscover}
           </Link>
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto">
           {/* New matches horizontal scroll */}
           <div className="px-5 pt-5 pb-3">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#555" }}>Neue Matches</p>
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#555" }}>{t.matches.newMatches}</p>
             <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
               {matches.map((m) => (
                 <button key={m.id} onClick={() => setActiveMatch(m)}
@@ -171,7 +173,7 @@ export default function MatchesPage() {
 
           {/* Chat list */}
           <div className="px-4 py-2">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3 px-1" style={{ color: "#555" }}>Nachrichten</p>
+            <p className="text-xs font-bold uppercase tracking-widest mb-3 px-1" style={{ color: "#555" }}>{t.matches.messages}</p>
             <div className="flex flex-col gap-1">
               {matches.map((match, i) => {
                 const rankColor = getRankColor(match.partner?.rank_tier ?? "iron")
@@ -205,7 +207,7 @@ export default function MatchesPage() {
                           {match.partner?.rank ?? "Unranked"}
                         </span>
                         <p className="text-xs truncate" style={{ color: "#555" }}>
-                          {lastMsg ? lastMsg.content : "Schreib als Erstes!"}
+                          {lastMsg ? lastMsg.content : t.matches.writeFirst}
                         </p>
                       </div>
                     </div>

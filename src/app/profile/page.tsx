@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const PLAYSTYLES = [
   { value: "casual", label: "Casual", emoji: "😎" },
@@ -49,6 +50,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"edit" | "valorant">("edit")
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useLanguage()
 
   const [displayName, setDisplayName] = useState("")
   const [bio, setBio] = useState("")
@@ -220,7 +222,7 @@ export default function ProfilePage() {
             <button onClick={handleLogout}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs"
               style={{ border: "1px solid var(--border)", color: "#666" }}>
-              <LogOut size={13} /> Logout
+              <LogOut size={13} /> {t.profile.logout}
             </button>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function ProfilePage() {
               <button onClick={() => fileInputRef.current?.click()}
                 className="relative w-24 h-24 rounded-2xl overflow-hidden group"
                 style={{ background: `${rankColor}20`, boxShadow: `0 0 30px ${rankColor}30` }}
-                title="Bild ändern">
+                title={t.profile.changePhoto}>
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -269,7 +271,7 @@ export default function ProfilePage() {
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-black truncate">{displayName || "Kein Name"}</h1>
+              <h1 className="text-2xl font-black truncate">{displayName || t.profile.noName}</h1>
               {profile?.riot_name && (
                 <p className="text-sm mt-0.5 truncate" style={{ color: "#666" }}>
                   {profile.riot_name}#{profile.riot_tag}
@@ -342,8 +344,8 @@ export default function ProfilePage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
           <div className="flex gap-1 p-1 rounded-2xl mb-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             {[
-              { key: "edit" as const, icon: User, label: "Profil" },
-              { key: "valorant" as const, icon: Activity, label: "Valorant" },
+              { key: "edit" as const, icon: User, label: t.profile.tabEdit },
+              { key: "valorant" as const, icon: Activity, label: t.profile.tabValorant },
             ].map((tab) => (
               <button key={tab.key} onClick={() => setActiveTab(tab.key)}
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
@@ -361,20 +363,20 @@ export default function ProfilePage() {
               className="p-6 rounded-2xl" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>Anzeigename</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>{t.profile.labelDisplayName}</label>
                   <input value={displayName} onChange={(e) => setDisplayName(e.target.value)}
-                    className="px-4 py-3 rounded-xl text-sm" placeholder="Dein Name..."
+                    className="px-4 py-3 rounded-xl text-sm" placeholder={t.profile.placeholderDisplayName}
                     style={{ background: "#0d0d14", border: "1px solid var(--border)", color: "var(--foreground)" }} />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>Bio</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>{t.profile.labelBio}</label>
                   <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3}
-                    placeholder="Erzähl etwas über dich — Spielstil, Ziele..."
+                    placeholder={t.profile.placeholderBio}
                     className="px-4 py-3 rounded-xl text-sm resize-none"
                     style={{ background: "#0d0d14", border: "1px solid var(--border)", color: "var(--foreground)" }} />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>Discord Tag</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>{t.profile.labelDiscord}</label>
                   <input value={discordTag} onChange={(e) => setDiscordTag(e.target.value)}
                     placeholder="username#1234 oder @username"
                     className="px-4 py-3 rounded-xl text-sm"
@@ -384,7 +386,7 @@ export default function ProfilePage() {
                 {/* Social Links */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>
-                    Social Links <span style={{ color: "#444", fontWeight: 400, textTransform: "none" as const }}>(optional)</span>
+                    {t.profile.labelSocialLinks} <span style={{ color: "#444", fontWeight: 400, textTransform: "none" as const }}>{t.profile.labelSocialLinksOptional}</span>
                   </label>
                   <div className="flex flex-col gap-2">
                     {([
@@ -408,7 +410,7 @@ export default function ProfilePage() {
 
                 {/* Playstyle */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>Spielstil</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>{t.profile.labelPlaystyle}</label>
                   <div className="flex flex-wrap gap-2">
                     {PLAYSTYLES.map((p) => (
                       <button key={p.value} type="button"
@@ -425,7 +427,7 @@ export default function ProfilePage() {
 
                 {/* Languages */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>Sprachen</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>{t.profile.labelLanguages}</label>
                   <div className="flex flex-wrap gap-2">
                     {LANGUAGES.map((lang) => {
                       const active = languages.includes(lang)
@@ -449,7 +451,7 @@ export default function ProfilePage() {
                 {/* Agent Mains */}
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>
-                    Agent Mains <span style={{ color: "#444", fontWeight: 400 }}>(max. 3)</span>
+                    {t.profile.labelAgentMains} <span style={{ color: "#444", fontWeight: 400 }}>{t.profile.agentMaxHint}</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {AGENTS.map((agent) => {
@@ -474,7 +476,7 @@ export default function ProfilePage() {
                   className="flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all btn-primary"
                   style={saved ? { background: "#00C060", boxShadow: "0 4px 15px rgba(0,192,96,0.4)" } : {}}>
                   {saving ? <Loader2 size={16} className="animate-spin" /> : saved ? <Check size={16} /> : <Save size={16} />}
-                  {saved ? "Gespeichert!" : saving ? "Speichern..." : "Änderungen speichern"}
+                  {saved ? t.profile.saved : saving ? t.profile.saving : t.profile.saveChanges}
                 </button>
               </div>
             </motion.div>
@@ -484,13 +486,13 @@ export default function ProfilePage() {
             <motion.div key="valorant" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
               className="p-6 rounded-2xl" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold">Account</h3>
+                <h3 className="font-bold">{t.profile.valorantAccount}</h3>
                 {profile?.riot_name && (
                   <button onClick={handleSyncStats} disabled={syncing}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold"
                     style={{ background: "#0d0d14", border: "1px solid var(--border)", color: "#888" }}>
                     <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
-                    {syncing ? "Syncing..." : "Sync Stats"}
+                    {syncing ? t.profile.syncing : t.profile.syncStats}
                   </button>
                 )}
               </div>
@@ -527,16 +529,16 @@ export default function ProfilePage() {
                     </div>
                   ) : (
                     <p className="text-sm text-center py-6" style={{ color: "#555" }}>
-                      Noch keine Stats. Klick auf &quot;Sync Stats&quot;.
+                      {t.profile.noStats}
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="text-center py-8">
                   <Activity size={40} className="mx-auto mb-4 opacity-20" />
-                  <p className="text-sm mb-5" style={{ color: "#888" }}>Noch kein Valorant-Account verknüpft</p>
+                  <p className="text-sm mb-5" style={{ color: "#888" }}>{t.profile.noAccount}</p>
                   <Link href="/onboarding" className="btn-primary px-6 py-3 text-sm inline-block">
-                    Account verknüpfen
+                    {t.profile.linkAccount}
                   </Link>
                 </div>
               )}

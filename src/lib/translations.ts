@@ -14,6 +14,55 @@ export type Translation = {
   steps: { title: string; desc: string }[]
   ctaBanner: { title: string; sub: string; cta: string }
   footer: string
+  discover: {
+    loading: string
+    emptyTitle: string
+    emptySub: string
+    reload: string
+    adjustFilters: string
+    filter: string
+    online: string
+    likeStamp: string
+    nopeStamp: string
+  }
+  matches: {
+    title: string
+    emptyTitle: string
+    emptySub: string
+    toDiscover: string
+    newMatches: string
+    messages: string
+    writeFirst: string
+    matchSingular: string
+    matchPlural: string
+  }
+  profile: {
+    logout: string
+    noName: string
+    tabEdit: string
+    tabValorant: string
+    changePhoto: string
+    labelDisplayName: string
+    placeholderDisplayName: string
+    labelBio: string
+    placeholderBio: string
+    labelDiscord: string
+    labelSocialLinks: string
+    labelSocialLinksOptional: string
+    labelPlaystyle: string
+    labelLanguages: string
+    labelAgentMains: string
+    agentMaxHint: string
+    saveChanges: string
+    saving: string
+    saved: string
+    valorantAccount: string
+    syncStats: string
+    syncing: string
+    noStats: string
+    noAccount: string
+    linkAccount: string
+  }
 }
 
 export const translations: Record<Locale, Translation> = {
@@ -52,6 +101,55 @@ export const translations: Record<Locale, Translation> = {
       cta: "Find My Duo →",
     },
     footer: "ValoPickr — Not an official Riot Games product",
+    discover: {
+      loading: "LOADING PROFILES",
+      emptyTitle: "No more profiles",
+      emptySub: "You've swiped through all available profiles.\nAdjust your filters or come back later.",
+      reload: "Reload",
+      adjustFilters: "Adjust Filters",
+      filter: "Filter",
+      online: "Online",
+      likeStamp: "MATCH ❤️",
+      nopeStamp: "NOPE 👎",
+    },
+    matches: {
+      title: "Matches",
+      emptyTitle: "No matches yet",
+      emptySub: "Keep swiping to find your Duo partner!",
+      toDiscover: "Start Swiping",
+      newMatches: "New Matches",
+      messages: "Messages",
+      writeFirst: "Say hi first!",
+      matchSingular: "Match",
+      matchPlural: "Matches",
+    },
+    profile: {
+      logout: "Logout",
+      noName: "No Name",
+      tabEdit: "Profile",
+      tabValorant: "Valorant",
+      changePhoto: "Change photo",
+      labelDisplayName: "Display Name",
+      placeholderDisplayName: "Your name...",
+      labelBio: "Bio",
+      placeholderBio: "Tell us about yourself — playstyle, goals...",
+      labelDiscord: "Discord Tag",
+      labelSocialLinks: "Social Links",
+      labelSocialLinksOptional: "(optional)",
+      labelPlaystyle: "Playstyle",
+      labelLanguages: "Languages",
+      labelAgentMains: "Agent Mains",
+      agentMaxHint: "(max. 3)",
+      saveChanges: "Save Changes",
+      saving: "Saving...",
+      saved: "Saved!",
+      valorantAccount: "Account",
+      syncStats: "Sync Stats",
+      syncing: "Syncing...",
+      noStats: "No stats yet. Click \"Sync Stats\".",
+      noAccount: "No Valorant account linked yet",
+      linkAccount: "Link Account",
+    },
   },
   de: {
     nav: {
@@ -88,6 +186,55 @@ export const translations: Record<Locale, Translation> = {
       cta: "Mein Duo finden →",
     },
     footer: "ValoPickr — Kein offizielles Riot Games Produkt",
+    discover: {
+      loading: "LADE PROFILE",
+      emptyTitle: "Keine Profile mehr",
+      emptySub: "Alle verfügbaren Profile wurden geswiped.\nPasse deine Filter an oder komm später wieder.",
+      reload: "Erneut laden",
+      adjustFilters: "Filter anpassen",
+      filter: "Filter",
+      online: "Online",
+      likeStamp: "MATCH ❤️",
+      nopeStamp: "NOPE 👎",
+    },
+    matches: {
+      title: "Matches",
+      emptyTitle: "Noch keine Matches",
+      emptySub: "Swipt weiter und findet euren Duo-Partner!",
+      toDiscover: "Zum Swipen",
+      newMatches: "Neue Matches",
+      messages: "Nachrichten",
+      writeFirst: "Schreib als Erstes!",
+      matchSingular: "Match",
+      matchPlural: "Matches",
+    },
+    profile: {
+      logout: "Logout",
+      noName: "Kein Name",
+      tabEdit: "Profil",
+      tabValorant: "Valorant",
+      changePhoto: "Bild ändern",
+      labelDisplayName: "Anzeigename",
+      placeholderDisplayName: "Dein Name...",
+      labelBio: "Bio",
+      placeholderBio: "Erzähl etwas über dich — Spielstil, Ziele...",
+      labelDiscord: "Discord Tag",
+      labelSocialLinks: "Social Links",
+      labelSocialLinksOptional: "(optional)",
+      labelPlaystyle: "Spielstil",
+      labelLanguages: "Sprachen",
+      labelAgentMains: "Agent Mains",
+      agentMaxHint: "(max. 3)",
+      saveChanges: "Änderungen speichern",
+      saving: "Speichern...",
+      saved: "Gespeichert!",
+      valorantAccount: "Account",
+      syncStats: "Sync Stats",
+      syncing: "Syncing...",
+      noStats: "Noch keine Stats. Klick auf \"Sync Stats\".",
+      noAccount: "Noch kein Valorant-Account verknüpft",
+      linkAccount: "Account verknüpfen",
+    },
   },
   ru: {
     nav: {
@@ -124,5 +271,54 @@ export const translations: Record<Locale, Translation> = {
       cta: "Найти дуо →",
     },
     footer: "ValoPickr — Не является официальным продуктом Riot Games",
+    discover: {
+      loading: "ЗАГРУЗКА ПРОФИЛЕЙ",
+      emptyTitle: "Профилей больше нет",
+      emptySub: "Вы просмотрели все доступные профили.\nИзмените фильтры или возвращайтесь позже.",
+      reload: "Обновить",
+      adjustFilters: "Настроить фильтры",
+      filter: "Фильтры",
+      online: "Онлайн",
+      likeStamp: "МАТЧ ❤️",
+      nopeStamp: "НOPE 👎",
+    },
+    matches: {
+      title: "Матчи",
+      emptyTitle: "Матчей пока нет",
+      emptySub: "Свайпайте дальше, чтобы найти дуо-партнёра!",
+      toDiscover: "Свайпать",
+      newMatches: "Новые матчи",
+      messages: "Сообщения",
+      writeFirst: "Напиши первым!",
+      matchSingular: "Матч",
+      matchPlural: "Матчей",
+    },
+    profile: {
+      logout: "Выйти",
+      noName: "Нет имени",
+      tabEdit: "Профиль",
+      tabValorant: "Valorant",
+      changePhoto: "Изменить фото",
+      labelDisplayName: "Имя",
+      placeholderDisplayName: "Твоё имя...",
+      labelBio: "О себе",
+      placeholderBio: "Расскажи о себе — стиль игры, цели...",
+      labelDiscord: "Discord Tag",
+      labelSocialLinks: "Соцсети",
+      labelSocialLinksOptional: "(необязательно)",
+      labelPlaystyle: "Стиль игры",
+      labelLanguages: "Языки",
+      labelAgentMains: "Основные агенты",
+      agentMaxHint: "(макс. 3)",
+      saveChanges: "Сохранить изменения",
+      saving: "Сохранение...",
+      saved: "Сохранено!",
+      valorantAccount: "Аккаунт",
+      syncStats: "Sync Stats",
+      syncing: "Синхронизация...",
+      noStats: "Статистики пока нет. Нажми «Sync Stats».",
+      noAccount: "Аккаунт Valorant не привязан",
+      linkAccount: "Привязать аккаунт",
+    },
   },
 }

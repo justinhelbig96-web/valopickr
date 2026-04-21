@@ -38,6 +38,8 @@ function isOnline(profile: ProfileWithStats): boolean {
 
 import PushSetup from "@/components/PushSetup"
 import { getAgentPortrait } from "@/lib/agentImages"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { LOCALES } from "@/lib/translations"
 
 export default function DiscoverPage() {
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
@@ -50,6 +52,7 @@ export default function DiscoverPage() {
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
   const [newMatchCount, setNewMatchCount] = useState(0)
   const [onlineCount, setOnlineCount] = useState(0)
+  const { locale, setLocale, t } = useLanguage()
   const swipingRef = useRef(false)
   const myIdRef = useRef<string | null>(null)
 
@@ -312,8 +315,25 @@ export default function DiscoverPage() {
           </Link>
         </nav>
 
-        {/* Right: Discord + Avatar */}
+        {/* Right: Language + Discord + Avatar */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* Language Switcher */}
+          <div className="flex items-center gap-0.5 rounded-xl p-1" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}>
+            {LOCALES.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLocale(l.code)}
+                className="px-2 py-1 rounded-lg text-xs font-bold transition-all"
+                style={{
+                  background: locale === l.code ? "rgba(255,70,85,0.2)" : "transparent",
+                  color: locale === l.code ? "var(--accent)" : "var(--muted)",
+                  border: locale === l.code ? "1px solid rgba(255,70,85,0.3)" : "1px solid transparent",
+                }}
+              >
+                {l.flag} {l.label}
+              </button>
+            ))}
+          </div>
           <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-90"
             style={{ background: "rgba(88,101,242,0.15)", border: "1px solid rgba(88,101,242,0.35)", color: "#8891f1" }}>
@@ -346,7 +366,7 @@ export default function DiscoverPage() {
                 }
               >
                 <SlidersHorizontal size={15} />
-                Filter
+                {t.discover.filter}
                 {activeCount > 0 && (
                   <span className="text-xs font-black px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#fff", fontSize: 10 }}>
                     {activeCount}
@@ -377,7 +397,7 @@ export default function DiscoverPage() {
                 style={{ border: "2px solid transparent", borderTopColor: "rgba(255,70,85,0.5)", animationDirection: "reverse", animationDuration: "0.6s" }} />
               <div className="absolute inset-0 flex items-center justify-center text-lg">⚔️</div>
             </div>
-            <p className="font-bebas text-xl tracking-widest" style={{ color: "#444" }}>LADE PROFILE</p>
+            <p className="font-bebas text-xl tracking-widest" style={{ color: "#444" }}>{t.discover.loading}</p>
           </motion.div>
         ) : !currentProfile ? (
           <motion.div
@@ -409,10 +429,10 @@ export default function DiscoverPage() {
             </div>
 
             <h2 className="font-bebas text-4xl tracking-wider mb-2" style={{ color: "var(--foreground)" }}>
-              Keine Profile mehr
+              {t.discover.emptyTitle}
             </h2>
             <p className="text-sm mb-8 leading-relaxed" style={{ color: "#555" }}>
-              Alle verfügbaren Profile wurden geswiped.<br />Passe deine Filter an oder komm später wieder.
+              {t.discover.emptySub.split("\n").map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}
             </p>
 
             <div className="flex flex-col gap-3 w-full">
@@ -423,7 +443,7 @@ export default function DiscoverPage() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
                 </svg>
-                Erneut laden
+                {t.discover.reload}
               </button>
               <button
                 onClick={() => setShowFilters(true)}
@@ -431,7 +451,7 @@ export default function DiscoverPage() {
                 style={{ border: "1px solid var(--border)", color: "#888" }}
               >
                 <SlidersHorizontal size={15} />
-                Filter anpassen
+                {t.discover.adjustFilters}
               </button>
             </div>
           </motion.div>
@@ -467,12 +487,12 @@ export default function DiscoverPage() {
                 {/* LIKE stamp */}
                 <motion.div className="absolute top-8 left-6 z-20 px-4 py-2 rounded-2xl font-black text-xl pointer-events-none"
                   style={{ opacity: likeOpacity, background: "rgba(0,220,100,0.15)", border: "3px solid #00DC64", color: "#00DC64", rotate: "-18deg", transformOrigin: "left center" }}>
-                  MATCH ❤️
+                  {t.discover.likeStamp}
                 </motion.div>
                 {/* NOPE stamp */}
                 <motion.div className="absolute top-8 right-6 z-20 px-4 py-2 rounded-2xl font-black text-xl pointer-events-none"
                   style={{ opacity: nopeOpacity, background: "rgba(255,70,85,0.15)", border: "3px solid #ff4655", color: "#ff4655", rotate: "18deg", transformOrigin: "right center" }}>
-                  NOPE 👎
+                  {t.discover.nopeStamp}
                 </motion.div>
 
                 {/* Avatar area */}
@@ -533,7 +553,7 @@ export default function DiscoverPage() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22c55e" }} />
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "#22c55e" }} />
                       </span>
-                      <span className="text-xs font-semibold" style={{ color: "#22c55e", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>Online</span>
+                      <span className="text-xs font-semibold" style={{ color: "#22c55e", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>{t.discover.online}</span>
                     </div>
                   )}
 
