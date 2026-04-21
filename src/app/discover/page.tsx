@@ -279,8 +279,19 @@ export default function DiscoverPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-5 py-3 glass sticky top-0 z-50"
         style={{ borderBottom: "1px solid var(--border)" }}>
-        {/* Left: Logo */}
-        <Link href="/" className="font-bebas text-2xl tracking-widest shimmer-text glow-text-red shrink-0">VALOPICKR</Link>
+        {/* Left: Logo + online dot */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <Link href="/" className="font-bebas text-2xl tracking-widest shimmer-text glow-text-red">VALOPICKR</Link>
+          {onlineCount > 0 && (
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22c55e" }} />
+                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "#22c55e" }} />
+              </span>
+              <span className="text-[11px] font-semibold" style={{ color: "#22c55e" }}>{onlineCount}</span>
+            </div>
+          )}
+        </div>
 
         {/* Center: Nav links */}
         <nav className="flex items-center gap-1">
@@ -362,15 +373,6 @@ export default function DiscoverPage() {
                   </span>
                 )}
               </button>
-              {onlineCount > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22c55e" }} />
-                    <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "#22c55e" }} />
-                  </span>
-                  <span className="text-xs font-semibold" style={{ color: "#22c55e" }}>{onlineCount} online</span>
-                </div>
-              )}
             </div>
           </>
         )
