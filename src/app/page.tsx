@@ -193,25 +193,28 @@ export default function HomePage() {
             <Star size={12} fill="currentColor" /> {t.hero.badge}
           </motion.div>
 
-          <h1 className="font-bebas text-7xl md:text-[8rem] tracking-wide leading-none mb-6 uppercase">
+          <h1 className="font-bebas text-[clamp(3.5rem,12vw,8rem)] tracking-wide leading-none mb-6 uppercase">
             <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="block text-white">
               {t.hero.line1}
             </motion.span>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="flex items-center justify-center gap-3">
+              className="flex items-center justify-center gap-2 flex-wrap">
               {t.hero.line2prefix && (
                 <span className="text-white">{t.hero.line2prefix}</span>
               )}
-              <div className="relative overflow-hidden flex items-center justify-center" style={{ height: "1.1em", minWidth: 260 }}>
-                <AnimatePresence mode="wait">
+              <div
+                className="relative overflow-hidden"
+                style={{ height: "1.15em", minWidth: "clamp(160px, 50vw, 420px)", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={t.hero.heroWords[wordIndex]}
-                    initial={{ opacity: 0, y: 32, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -32, scale: 0.96 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="block shimmer-text glow-text-red"
+                    initial={{ opacity: 0, y: "100%" }}
+                    animate={{ opacity: 1, y: "0%" }}
+                    exit={{ opacity: 0, y: "-100%" }}
+                    transition={{ duration: 0.38, ease: "easeInOut" }}
+                    className="absolute shimmer-text glow-text-red whitespace-nowrap"
                   >
                     {t.hero.heroWords[wordIndex]}
                   </motion.span>
