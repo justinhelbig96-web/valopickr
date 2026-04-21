@@ -6,11 +6,11 @@ import { createClient } from "@/lib/supabase/client"
 import { getRankColor, getRankGlow, getRankIndex, RANKS } from "@/lib/ranks"
 import RankIcon from "@/components/RankIcon"
 import type { Profile, ValorantStats } from "@/types/database"
-import { Heart, X, MessageSquare, Settings, Globe, Swords, Trophy } from "lucide-react"
+import { Heart, X, MessageSquare, Globe, Swords, Trophy, SlidersHorizontal } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import MatchModal from "@/components/MatchModal"
-import RankFilterPanel from "@/components/RankFilterPanel"
+import RankFilterPanel, { type FilterValue } from "@/components/RankFilterPanel"
 
 type ProfileWithStats = Profile & { stats?: ValorantStats | null }
 
@@ -44,7 +44,7 @@ export default function DiscoverPage() {
   const [loading, setLoading] = useState(true)
   const [matchedProfile, setMatchedProfile] = useState<ProfileWithStats | null>(null)
   const [showFilters, setShowFilters] = useState(false)
-  const [rankFilter, setRankFilter] = useState<{ min: string; max: string }>({ min: "iron", max: "radiant" })
+  const [rankFilter, setRankFilter] = useState<FilterValue>({ min: "iron", max: "radiant", regions: [], playstyles: [], languages: [] })
   const [myProfile, setMyProfile] = useState<Profile | null>(null)
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
   const [newMatchCount, setNewMatchCount] = useState(0)
@@ -87,6 +87,10 @@ export default function DiscoverPage() {
     const maxIdx = RANKS.findIndex((r) => r.tier === rankFilter.max)
     const allowedTiers = RANKS.slice(Math.max(0, minIdx), Math.min(RANKS.length, maxIdx + 1)).map((r) => r.tier)
     if (allowedTiers.length < RANKS.length) query = query.in("rank_tier", allowedTiers)
+    if (rankFilter.regions.length > 0) query = query.in("region", rankFilter.regions)
+    if (rankFilter.playstyles.length > 0) query = query.in("playstyle", rankFilter.playstyles)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (rankFilter.languages.length > 0) query = (query as any).overlaps("languages", rankFilter.languages)
 
     const { data } = await query.limit(50)
     const mapped: ProfileWithStats[] = (data ?? []).map((p: Record<string, unknown>) => ({
@@ -256,11 +260,6 @@ export default function DiscoverPage() {
         style={{ borderColor: "var(--border)" }}>
         <Link href="/" className="font-black tracking-tighter text-xl shimmer-text">VALOPICKR</Link>
         <div className="flex items-center gap-2">
-          <button onClick={() => setShowFilters(!showFilters)}
-            className="p-2.5 rounded-xl transition-colors"
-            style={{ background: showFilters ? "rgba(255,70,85,0.15)" : "var(--card)", border: `1px solid ${showFilters ? "rgba(255,70,85,0.5)" : "var(--border)"}`, color: showFilters ? "var(--accent)" : "var(--foreground)" }}>
-            <Settings size={18} />
-          </button>
           <Link href="/matches" className="p-2.5 rounded-xl relative"
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <MessageSquare size={18} />
@@ -290,10 +289,35 @@ export default function DiscoverPage() {
         </div>
       </header>
 
+      {/* Filter strip */}
+      {(() => {
+        const activeCount = [rankFilter.min !== "iron" || rankFilter.max !== "radiant", rankFilter.regions.length > 0, rankFilter.playstyles.length > 0, rankFilter.languages.length > 0].filter(Boolean).length
+        return (
+          <div className="flex items-center px-4 py-2.5 border-b" style={{ borderColor: "var(--border)" }}>
+            <button
+              onClick={() => setShowFilters(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
+              style={activeCount > 0
+                ? { background: "rgba(255,70,85,0.12)", border: "1px solid rgba(255,70,85,0.4)", color: "var(--accent)" }
+                : { background: "var(--card)", border: "1px solid var(--border)", color: "#aaa" }
+              }
+            >
+              <SlidersHorizontal size={15} />
+              Filter
+              {activeCount > 0 && (
+                <span className="text-xs font-black px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#fff", fontSize: 10 }}>
+                  {activeCount}
+                </span>
+              )}
+            </button>
+          </div>
+        )
+      })()}
+
       <AnimatePresence>
         {showFilters && (
           <RankFilterPanel value={rankFilter}
-            onChange={(f) => { setRankFilter(f); setShowFilters(false) }}
+            onChange={(f) => { setRankFilter(f) }}
             onClose={() => setShowFilters(false)} />
         )}
       </AnimatePresence>
