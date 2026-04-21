@@ -122,3 +122,8 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure handle_new_user();
+
+-- Migration: Social Links (run once in Supabase SQL Editor)
+alter table profiles add column if not exists instagram_url text;
+alter table profiles add column if not exists reddit_url text;
+alter table profiles add column if not exists github_url text;

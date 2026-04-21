@@ -32,6 +32,9 @@ export interface Database {
           last_synced_at: string | null
           last_seen: string | null
           photo_urls: string[] | null
+          instagram_url: string | null
+          reddit_url: string | null
+          github_url: string | null
           created_at: string
           updated_at: string
         }
@@ -57,6 +60,9 @@ export interface Database {
           last_synced_at?: string | null
           last_seen?: string | null
           photo_urls?: string[] | null
+          instagram_url?: string | null
+          reddit_url?: string | null
+          github_url?: string | null
         }
         Update: Partial<Database['public']['Tables']['profiles']['Insert']> & { updated_at?: string }
         Relationships: []

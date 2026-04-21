@@ -50,6 +50,7 @@ export default function DiscoverPage() {
   const [myProfile, setMyProfile] = useState<Profile | null>(null)
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
   const [newMatchCount, setNewMatchCount] = useState(0)
+  const [onlineCount, setOnlineCount] = useState(0)
   const { locale, setLocale } = useLanguage()
   const swipingRef = useRef(false)
   const myIdRef = useRef<string | null>(null)
@@ -156,6 +157,22 @@ export default function DiscoverPage() {
   }
 
   useEffect(() => { fetchProfiles() }, [fetchProfiles])
+
+  // Online counter — refresh every 60 s
+  useEffect(() => {
+    async function fetchOnline() {
+      const supabase = createClient()
+      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+      const { count } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .gt("last_seen", fiveMinAgo)
+      setOnlineCount(count ?? 0)
+    }
+    fetchOnline()
+    const t = setInterval(fetchOnline, 60_000)
+    return () => clearInterval(t)
+  }, [])
 
   // Badge: count new matches since last visit to /matches
   useEffect(() => {
@@ -327,7 +344,7 @@ export default function DiscoverPage() {
         return (
           <>
             <div className="header-accent-line" />
-            <div className="flex items-center px-4 py-2.5 border-b" style={{ borderColor: "var(--border)", background: "rgba(10,10,18,0.7)" }}>
+            <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "var(--border)", background: "rgba(10,10,18,0.7)" }}>
               <button
                 onClick={() => setShowFilters(true)}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
@@ -344,6 +361,15 @@ export default function DiscoverPage() {
                   </span>
                 )}
               </button>
+              {onlineCount > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22c55e" }} />
+                    <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "#22c55e" }} />
+                  </span>
+                  <span className="text-xs font-semibold" style={{ color: "#22c55e" }}>{onlineCount} online</span>
+                </div>
+              )}
             </div>
           </>
         )
@@ -558,6 +584,35 @@ export default function DiscoverPage() {
                         <Image src="/discord-icon.svg" alt="Discord" width={11} height={11} style={{ opacity: 0.85 }} />
                         {currentProfile.discord_tag}
                       </p>
+                    )}
+                    {/* Social links */}
+                    {(currentProfile.instagram_url || currentProfile.reddit_url || currentProfile.github_url) && (
+                      <div className="flex gap-1.5 flex-wrap mt-1">
+                        {currentProfile.instagram_url && (
+                          <a href={currentProfile.instagram_url.startsWith("http") ? currentProfile.instagram_url : `https://${currentProfile.instagram_url}`}
+                            target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold"
+                            style={{ background: "rgba(225,48,108,0.12)", color: "#E1306C", border: "1px solid rgba(225,48,108,0.25)" }}>
+                            📷 IG
+                          </a>
+                        )}
+                        {currentProfile.reddit_url && (
+                          <a href={currentProfile.reddit_url.startsWith("http") ? currentProfile.reddit_url : `https://${currentProfile.reddit_url}`}
+                            target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold"
+                            style={{ background: "rgba(255,69,0,0.12)", color: "#FF4500", border: "1px solid rgba(255,69,0,0.25)" }}>
+                            🔴 Reddit
+                          </a>
+                        )}
+                        {currentProfile.github_url && (
+                          <a href={currentProfile.github_url.startsWith("http") ? currentProfile.github_url : `https://${currentProfile.github_url}`}
+                            target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold"
+                            style={{ background: "rgba(255,255,255,0.06)", color: "#bbb", border: "1px solid rgba(255,255,255,0.12)" }}>
+                            🐙 GitHub
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                     {/* Compatibility score */}

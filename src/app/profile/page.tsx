@@ -53,6 +53,9 @@ export default function ProfilePage() {
   const [displayName, setDisplayName] = useState("")
   const [bio, setBio] = useState("")
   const [discordTag, setDiscordTag] = useState("")
+  const [instagramUrl, setInstagramUrl] = useState("")
+  const [redditUrl, setRedditUrl] = useState("")
+  const [githubUrl, setGithubUrl] = useState("")
   const [playstyle, setPlaystyle] = useState<string>("")
   const [languages, setLanguages] = useState<string[]>([])
   const [agentMains, setAgentMains] = useState<string[]>([])
@@ -80,6 +83,9 @@ export default function ProfilePage() {
       setDisplayName(p?.display_name ?? "")
       setBio(p?.bio ?? "")
       setDiscordTag(p?.discord_tag ?? "")
+      setInstagramUrl(p?.instagram_url ?? "")
+      setRedditUrl(p?.reddit_url ?? "")
+      setGithubUrl(p?.github_url ?? "")
       setPlaystyle(p?.playstyle ?? "")
       setLanguages(p?.languages ?? [])
       setAgentMains(p?.agent_mains ?? [])
@@ -124,13 +130,16 @@ export default function ProfilePage() {
       display_name: displayName,
       bio,
       discord_tag: discordTag,
+      instagram_url: instagramUrl.trim() || null,
+      reddit_url: redditUrl.trim() || null,
+      github_url: githubUrl.trim() || null,
       playstyle: playstyle || null,
       languages: languages.length > 0 ? languages : null,
       agent_mains: agentMains.length > 0 ? agentMains : null,
       updated_at: new Date().toISOString(),
     }).eq("id", profile.id)
     setSaved(true)
-    setProfile((p) => p ? { ...p, display_name: displayName, bio, discord_tag: discordTag, playstyle, languages, agent_mains: agentMains } : p)
+    setProfile((p) => p ? { ...p, display_name: displayName, bio, discord_tag: discordTag, instagram_url: instagramUrl.trim() || null, reddit_url: redditUrl.trim() || null, github_url: githubUrl.trim() || null, playstyle, languages, agent_mains: agentMains } : p)
     setTimeout(() => setSaved(false), 2500)
     setSaving(false)
   }
@@ -286,6 +295,27 @@ export default function ProfilePage() {
                     <MessageSquare size={11} /> {profile.discord_tag}
                   </span>
                 )}
+                {profile?.instagram_url && (
+                  <a href={profile.instagram_url.startsWith("http") ? profile.instagram_url : `https://${profile.instagram_url}`} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                    style={{ background: "rgba(225,48,108,0.12)", color: "#E1306C", border: "1px solid rgba(225,48,108,0.3)" }}>
+                    IG
+                  </a>
+                )}
+                {profile?.reddit_url && (
+                  <a href={profile.reddit_url.startsWith("http") ? profile.reddit_url : `https://${profile.reddit_url}`} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                    style={{ background: "rgba(255,69,0,0.12)", color: "#FF4500", border: "1px solid rgba(255,69,0,0.3)" }}>
+                    r/ Reddit
+                  </a>
+                )}
+                {profile?.github_url && (
+                  <a href={profile.github_url.startsWith("http") ? profile.github_url : `https://${profile.github_url}`} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+                    style={{ background: "rgba(255,255,255,0.07)", color: "#ddd", border: "1px solid rgba(255,255,255,0.15)" }}>
+                    GH GitHub
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -349,6 +379,31 @@ export default function ProfilePage() {
                     placeholder="username#1234 oder @username"
                     className="px-4 py-3 rounded-xl text-sm"
                     style={{ background: "#0d0d14", border: "1px solid var(--border)", color: "var(--foreground)" }} />
+                </div>
+
+                {/* Social Links */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#555" }}>
+                    Social Links <span style={{ color: "#444", fontWeight: 400, textTransform: "none" as const }}>(optional)</span>
+                  </label>
+                  <div className="flex flex-col gap-2">
+                    {([
+                      { key: "ig", prefix: "IG", color: "#E1306C", placeholder: "instagram.com/username", value: instagramUrl, set: setInstagramUrl },
+                      { key: "rd", prefix: "r/", color: "#FF4500", placeholder: "reddit.com/u/username", value: redditUrl, set: setRedditUrl },
+                      { key: "gh", prefix: "GH", color: "#bbb", placeholder: "github.com/username", value: githubUrl, set: setGithubUrl },
+                    ] as const).map(({ key, prefix, color, placeholder, value, set }) => (
+                      <div key={key} className="relative flex items-center">
+                        <span className="absolute left-3 text-[11px] font-black pointer-events-none select-none" style={{ color }}>{prefix}</span>
+                        <input
+                          value={value}
+                          onChange={(e) => set(e.target.value)}
+                          placeholder={placeholder}
+                          className="w-full pl-9 pr-4 py-3 rounded-xl text-sm"
+                          style={{ background: "#0d0d14", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Playstyle */}

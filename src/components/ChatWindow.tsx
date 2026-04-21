@@ -47,8 +47,14 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
       .eq("match_id", match.id)
       .order("created_at", { ascending: true })
       .then(({ data }) => {
-        setMessages(data ?? [])
+        const msgs = data ?? []
+        setMessages(msgs)
         setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100)
+        // Mark incoming unread messages as read
+        const unreadIds = msgs.filter((m) => m.sender_id !== myId && !m.read).map((m) => m.id)
+        if (unreadIds.length > 0) {
+          supabase.from("messages").update({ read: true }).in("id", unreadIds).then(() => {})
+        }
       })
 
     const channel = supabase
@@ -57,10 +63,18 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
         { event: "INSERT", schema: "public", table: "messages", filter: `match_id=eq.${match.id}` },
         (payload) => {
           const newMsg = payload.new as Message
-          // Eigene Nachrichten bereits optimistisch vorhanden, nur fremde hinzufügen
           if (newMsg.sender_id === myId) return
           setMessages((prev) => [...prev, newMsg])
+          // Mark as read since we're viewing this chat
+          supabase.from("messages").update({ read: true }).eq("id", newMsg.id).then(() => {})
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50)
+        }
+      )
+      .on("postgres_changes",
+        { event: "UPDATE", schema: "public", table: "messages", filter: `match_id=eq.${match.id}` },
+        (payload) => {
+          const updated = payload.new as Message
+          setMessages((prev) => prev.map((m) => m.id === updated.id ? { ...m, read: updated.read } : m))
         }
       )
       .subscribe()
@@ -129,6 +143,30 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
             {copied ? "Kopiert!" : partner.discord_tag}
           </button>
         )}
+        {partner.instagram_url && (
+          <a href={partner.instagram_url.startsWith("http") ? partner.instagram_url : `https://${partner.instagram_url}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold"
+            style={{ background: "rgba(225,48,108,0.12)", color: "#E1306C", border: "1px solid rgba(225,48,108,0.3)" }}>
+            IG
+          </a>
+        )}
+        {partner.reddit_url && (
+          <a href={partner.reddit_url.startsWith("http") ? partner.reddit_url : `https://${partner.reddit_url}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold"
+            style={{ background: "rgba(255,69,0,0.12)", color: "#FF4500", border: "1px solid rgba(255,69,0,0.3)" }}>
+            r/
+          </a>
+        )}
+        {partner.github_url && (
+          <a href={partner.github_url.startsWith("http") ? partner.github_url : `https://${partner.github_url}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold"
+            style={{ background: "rgba(255,255,255,0.05)", color: "#bbb", border: "1px solid rgba(255,255,255,0.12)" }}>
+            GH
+          </a>
+        )}
       </div>
 
       {/* Messages */}
@@ -174,6 +212,7 @@ export default function ChatWindow({ match, partner, myId, onBack }: Props) {
                     </div>
                     <span className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right" : "text-left"}`} style={{ color: "#444" }}>
                       {new Date(msg.created_at).toLocaleTimeString("de", { hour: "2-digit", minute: "2-digit" })}
+                      {isMe && <span style={{ color: msg.read ? "#7289da" : "#555", marginLeft: 3 }}>{msg.read ? "✓✓" : "✓"}</span>}
                     </span>
                   </div>
                 </div>
