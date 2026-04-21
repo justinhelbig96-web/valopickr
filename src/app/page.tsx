@@ -203,7 +203,7 @@ export default function HomePage() {
               {t.hero.line2prefix && (
                 <span className="text-white">{t.hero.line2prefix}</span>
               )}
-              <div className="relative overflow-hidden" style={{ height: "1.1em", minWidth: 200 }}>
+              <div className="relative overflow-hidden flex items-center justify-center" style={{ height: "1.1em", minWidth: 260 }}>
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={t.hero.heroWords[wordIndex]}
@@ -222,7 +222,7 @@ export default function HomePage() {
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="text-lg md:text-xl max-w-md mx-auto mb-10 leading-relaxed"
-            style={{ color: "var(--muted)" }}>
+            style={{ color: "rgba(255,255,255,0.7)", textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
             {t.hero.sub}
           </motion.p>
 
@@ -249,7 +249,8 @@ export default function HomePage() {
               style={{
                 background: "var(--card)",
                 border: `1px solid ${card.color}35`,
-                left: `${16 + i * 30}%`,
+                left: "50%",
+                transform: `translateX(${(i - 1) * 210 - 104}px)`,
                 boxShadow: `0 8px 40px ${card.color}18`,
                 animationDelay: `${i * 0.8}s`,
                 zIndex: i === 1 ? 10 : 5,
