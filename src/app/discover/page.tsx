@@ -36,8 +36,6 @@ function isOnline(profile: ProfileWithStats): boolean {
   return Date.now() - new Date(profile.last_seen).getTime() < 30 * 60 * 1000
 }
 
-import { useLanguage } from "@/contexts/LanguageContext"
-import { LOCALES } from "@/lib/translations"
 import PushSetup from "@/components/PushSetup"
 import { getAgentPortrait } from "@/lib/agentImages"
 
@@ -52,7 +50,6 @@ export default function DiscoverPage() {
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
   const [newMatchCount, setNewMatchCount] = useState(0)
   const [onlineCount, setOnlineCount] = useState(0)
-  const { locale, setLocale } = useLanguage()
   const swipingRef = useRef(false)
   const myIdRef = useRef<string | null>(null)
 
@@ -315,25 +312,8 @@ export default function DiscoverPage() {
           </Link>
         </nav>
 
-        {/* Right: Language + Discord + Avatar */}
+        {/* Right: Discord + Avatar */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Language Switcher */}
-          <div className="flex items-center gap-0.5 rounded-xl p-1" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}>
-            {LOCALES.map((l) => (
-              <button
-                key={l.code}
-                onClick={() => setLocale(l.code)}
-                className="px-2 py-1 rounded-lg text-xs font-bold transition-all"
-                style={{
-                  background: locale === l.code ? "rgba(255,70,85,0.2)" : "transparent",
-                  color: locale === l.code ? "var(--accent)" : "var(--muted)",
-                  border: locale === l.code ? "1px solid rgba(255,70,85,0.3)" : "1px solid transparent",
-                }}
-              >
-                {l.flag} {l.label}
-              </button>
-            ))}
-          </div>
           <a href="https://discord.gg/aK2xNfAfEa" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-90"
             style={{ background: "rgba(88,101,242,0.15)", border: "1px solid rgba(88,101,242,0.35)", color: "#8891f1" }}>
