@@ -39,6 +39,7 @@ function isOnline(profile: ProfileWithStats): boolean {
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LOCALES } from "@/lib/translations"
 import PushSetup from "@/components/PushSetup"
+import { getAgentPortrait } from "@/lib/agentImages"
 
 export default function DiscoverPage() {
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
@@ -497,32 +498,47 @@ export default function DiscoverPage() {
                   {currentProfile.avatar_url ? (
                     <img src={currentProfile.avatar_url} alt={currentProfile.display_name}
                       className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full relative flex flex-col items-center justify-center gap-3"
-                      style={{ background: `linear-gradient(160deg, ${rankColor}30 0%, ${rankColor}10 40%, #0a0a14 100%)` }}>
-                      {/* Decorative glow blob */}
-                      <div className="absolute inset-0 pointer-events-none"
-                        style={{ background: `radial-gradient(ellipse at 50% 40%, ${rankColor}25, transparent 65%)` }} />
-                      {/* Grid pattern */}
-                      <div className="absolute inset-0 opacity-5 pointer-events-none"
-                        style={{ backgroundImage: `linear-gradient(${rankColor} 1px, transparent 1px), linear-gradient(90deg, ${rankColor} 1px, transparent 1px)`, backgroundSize: "32px 32px" }} />
-                      {/* Initial */}
-                      <span className="relative text-[96px] font-black leading-none"
-                        style={{ color: rankColor, textShadow: `0 0 60px ${rankColor}80, 0 0 120px ${rankColor}30` }}>
-                        {currentProfile.display_name?.[0]?.toUpperCase() ?? "?"}
-                      </span>
-                      {/* Rank icon */}
-                      {currentProfile.rank && (
-                        <div className="relative flex flex-col items-center gap-1">
-                          <RankIcon rank={currentProfile.rank} tier={currentProfile.rank_tier ?? "iron"} size={56} />
-                          <span className="text-xs font-bold px-3 py-1 rounded-full"
-                            style={{ background: `${rankColor}25`, color: rankColor, border: `1px solid ${rankColor}40` }}>
-                            {currentProfile.rank}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  ) : (() => {
+                    const agentMain = currentProfile.agent_mains?.[0]
+                    const agentPortrait = agentMain ? getAgentPortrait(agentMain) : null
+                    return (
+                      <div className="w-full h-full relative flex flex-col items-center justify-center gap-3"
+                        style={{ background: `linear-gradient(160deg, ${rankColor}30 0%, ${rankColor}10 40%, #0a0a14 100%)` }}>
+                        {/* Decorative glow blob */}
+                        <div className="absolute inset-0 pointer-events-none"
+                          style={{ background: `radial-gradient(ellipse at 50% 40%, ${rankColor}25, transparent 65%)` }} />
+                        {/* Grid pattern */}
+                        <div className="absolute inset-0 opacity-5 pointer-events-none"
+                          style={{ backgroundImage: `linear-gradient(${rankColor} 1px, transparent 1px), linear-gradient(90deg, ${rankColor} 1px, transparent 1px)`, backgroundSize: "32px 32px" }} />
+                        {agentPortrait ? (
+                          /* Agent portrait — transparent PNG on gradient BG */
+                          <img
+                            src={agentPortrait}
+                            alt={agentMain ?? ""}
+                            className="absolute bottom-0 left-0 right-0 w-full h-full"
+                            style={{ objectFit: "contain", objectPosition: "bottom center", filter: `drop-shadow(0 0 40px ${rankColor}70)` }}
+                          />
+                        ) : (
+                          /* Fallback: initial letter */
+                          <>
+                            <span className="relative text-[96px] font-black leading-none"
+                              style={{ color: rankColor, textShadow: `0 0 60px ${rankColor}80, 0 0 120px ${rankColor}30` }}>
+                              {currentProfile.display_name?.[0]?.toUpperCase() ?? "?"}
+                            </span>
+                            {currentProfile.rank && (
+                              <div className="relative flex flex-col items-center gap-1">
+                                <RankIcon rank={currentProfile.rank} tier={currentProfile.rank_tier ?? "iron"} size={56} />
+                                <span className="text-xs font-bold px-3 py-1 rounded-full"
+                                  style={{ background: `${rankColor}25`, color: rankColor, border: `1px solid ${rankColor}40` }}>
+                                  {currentProfile.rank}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   {/* Bottom gradient */}
                   <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
