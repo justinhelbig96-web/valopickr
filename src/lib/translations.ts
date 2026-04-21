@@ -8,7 +8,7 @@ export const LOCALES: { code: Locale; label: string; flag: string }[] = [
 
 export type Translation = {
   nav: { login: string; register: string; matches: string; leaderboard: string }
-  hero: { badge: string; line1: string; line2: string; sub: string; cta: string; ctaSub: string }
+  hero: { badge: string; line1: string; line2prefix: string; heroWords: string[]; sub: string; cta: string; ctaSub: string }
   howTitle: string
   howSub: string
   steps: { title: string; desc: string }[]
@@ -76,7 +76,8 @@ export const translations: Record<Locale, Translation> = {
     hero: {
       badge: "The #1 Duo Finder for Valorant",
       line1: "Stop Playing",
-      line2: "With Randoms.",
+      line2prefix: "With",
+      heroWords: ["RANDOMS", "TOXIC MATES", "SMURFS", "LEAVERS"],
       sub: "Match with players who share your rank, playstyle, and mindset. No more excuses — just wins.",
       cta: "Find My Duo — Free",
       ctaSub: "Already have an account? Sign In →",
@@ -163,7 +164,8 @@ export const translations: Record<Locale, Translation> = {
     hero: {
       badge: "Der #1 Duo-Finder für Valorant",
       line1: "Schluss mit",
-      line2: "Toxic Randoms.",
+      line2prefix: "",
+      heroWords: ["RANDOMS", "TOXIC MATES", "SMURFS", "LEAVERN"],
       sub: "Finde Mitspieler, die zu deinem Rank und Spielstil passen. Keine Ausreden mehr — nur Wins.",
       cta: "Mein Duo finden — Gratis",
       ctaSub: "Schon Account? Anmelden →",
@@ -250,7 +252,8 @@ export const translations: Record<Locale, Translation> = {
     hero: {
       badge: "Лучший поиск дуо для Valorant",
       line1: "Хватит играть",
-      line2: "С Рандомами.",
+      line2prefix: "С",
+      heroWords: ["РАНДОМАМИ", "ТОКСИКАМИ", "СМУРФАМИ", "ЛИВЕРАМИ"],
       sub: "Найди игроков с твоим рангом и стилем. Никакой токсичности — только победы.",
       cta: "Найти дуо — Бесплатно",
       ctaSub: "Уже есть аккаунт? Войти →",

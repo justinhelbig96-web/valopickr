@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useRef, useEffect, useState } from "react"
-import { motion, useInView, animate } from "framer-motion"
+import { motion, useInView, animate, AnimatePresence } from "framer-motion"
 import { ChevronRight, Star, Zap, Shield, Users } from "lucide-react"
 import { useRankIcons } from "@/components/RankIcon"
 import { getTierIcon, getRankIcon } from "@/lib/rankIcons"
@@ -63,6 +63,7 @@ export default function HomePage() {
   const rankIcons = useRankIcons()
   const { locale, setLocale, t } = useLanguage()
   const [userCount, setUserCount] = useState(0)
+  const [wordIndex, setWordIndex] = useState(0)
   const STEP_ICONS = [Shield, Zap, Users]
   const STEP_COLORS = ["#ff4655", "#FFD700", "#00FF7F"]
   const STEP_NUMS = ["01", "02", "03"]
@@ -73,6 +74,13 @@ export default function HomePage() {
       .then((d) => { if (d.count > 0) setUserCount(d.count) })
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setWordIndex((i) => (i + 1) % t.hero.heroWords.length)
+    }, 2200)
+    return () => clearInterval(id)
+  }, [t.hero.heroWords.length])
   return (
     <main className="flex flex-col min-h-screen grid-bg">
       {/* ===== VIDEO BACKGROUND ===== */}
@@ -190,10 +198,26 @@ export default function HomePage() {
               className="block text-white">
               {t.hero.line1}
             </motion.span>
-            <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="block shimmer-text">
-              {t.hero.line2}
-            </motion.span>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+              className="flex items-center justify-center gap-3">
+              {t.hero.line2prefix && (
+                <span className="text-white">{t.hero.line2prefix}</span>
+              )}
+              <div className="relative overflow-hidden" style={{ height: "1.1em", minWidth: 200 }}>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={t.hero.heroWords[wordIndex]}
+                    initial={{ opacity: 0, y: 32, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -32, scale: 0.96 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="block shimmer-text glow-text-red"
+                  >
+                    {t.hero.heroWords[wordIndex]}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+            </motion.div>
           </h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
