@@ -204,17 +204,17 @@ export default function HomePage() {
                 <span className="text-white">{t.hero.line2prefix}</span>
               )}
               <div
-                className="relative overflow-hidden"
-                style={{ height: "1.15em", minWidth: "clamp(160px, 50vw, 420px)", display: "flex", alignItems: "center", justifyContent: "center" }}
+                className="relative"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "1.15em" }}
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={t.hero.heroWords[wordIndex]}
-                    initial={{ opacity: 0, y: "100%" }}
-                    animate={{ opacity: 1, y: "0%" }}
-                    exit={{ opacity: 0, y: "-100%" }}
-                    transition={{ duration: 0.38, ease: "easeInOut" }}
-                    className="absolute shimmer-text glow-text-red whitespace-nowrap"
+                    initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 1.08, filter: "blur(6px)" }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="shimmer-text glow-text-red whitespace-nowrap"
                   >
                     {t.hero.heroWords[wordIndex]}
                   </motion.span>
