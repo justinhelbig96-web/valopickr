@@ -52,6 +52,8 @@ export default function DiscoverPage() {
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null)
   const [newMatchCount, setNewMatchCount] = useState(0)
   const [onlineCount, setOnlineCount] = useState(0)
+  const [statsLoading, setStatsLoading] = useState<Set<string>>(new Set())
+  const [statsFailed, setStatsFailed] = useState<Set<string>>(new Set())
   const { locale, setLocale, t } = useLanguage()
   const swipingRef = useRef(false)
   const myIdRef = useRef<string | null>(null)
@@ -116,16 +118,28 @@ export default function DiscoverPage() {
   }, [rankFilter])
 
   async function autoFetchStats(profiles: ProfileWithStats[], supabase: ReturnType<typeof createClient>) {
-    for (const p of profiles) {
-      if (!p.riot_name || !p.riot_tag) continue
+    const valid = profiles.filter((p) => p.riot_name && p.riot_tag)
+    if (valid.length === 0) return
+
+    // Mark all as loading
+    setStatsLoading((prev) => {
+      const next = new Set(prev)
+      valid.forEach((p) => next.add(p.id))
+      return next
+    })
+
+    const CONCURRENCY = 3
+    let i = 0
+
+    async function fetchOne(p: ProfileWithStats) {
       try {
         const region = p.region?.toLowerCase() ?? "eu"
         const res = await fetch(
-          `/api/valorant/player?name=${encodeURIComponent(p.riot_name)}&tag=${encodeURIComponent(p.riot_tag)}&region=${region}`
+          `/api/valorant/player?name=${encodeURIComponent(p.riot_name!)}&tag=${encodeURIComponent(p.riot_tag!)}&region=${region}`
         )
-        if (!res.ok) continue
+        if (!res.ok) throw new Error("not ok")
         const data = await res.json()
-        if (!data.stats) continue
+        if (!data.stats) throw new Error("no stats")
 
         const statsRow = {
           user_id: p.id,
@@ -143,7 +157,6 @@ export default function DiscoverPage() {
           .from("valorant_stats")
           .upsert(statsRow, { onConflict: "user_id" })
 
-        // Update local state so UI updates immediately
         setProfiles((prev) =>
           prev.map((pr) =>
             pr.id === p.id
@@ -152,9 +165,21 @@ export default function DiscoverPage() {
           )
         )
       } catch {
-        // silently skip if fetch fails for one profile
+        setStatsFailed((prev) => { const next = new Set(prev); next.add(p.id); return next })
+      } finally {
+        setStatsLoading((prev) => { const next = new Set(prev); next.delete(p.id); return next })
       }
     }
+
+    // Run with concurrency limit
+    async function worker() {
+      while (i < valid.length) {
+        const p = valid[i++]
+        await fetchOne(p)
+      }
+    }
+
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, valid.length) }, worker))
   }
 
   useEffect(() => { fetchProfiles() }, [fetchProfiles])
@@ -698,7 +723,7 @@ export default function DiscoverPage() {
                         <p className="text-[10px] mb-0.5" style={{ color: "#555" }}>{s.label}</p>
                         {s.value !== null ? (
                           <p className="text-sm font-black" style={{ color: s.good ? rankColor : "var(--foreground)" }}>{s.value}</p>
-                        ) : currentProfile.riot_name ? (
+                        ) : currentProfile.riot_name && statsLoading.has(currentProfile.id) ? (
                           <div className="h-3.5 w-8 mx-auto rounded animate-pulse mt-0.5" style={{ background: "#1e1e2e" }} />
                         ) : (
                           <p className="text-sm font-black" style={{ color: "#444" }}>--</p>
@@ -707,7 +732,7 @@ export default function DiscoverPage() {
                     ))}
                   </div>
                   {/* Loading hint when stats are being fetched */}
-                  {!currentProfile.stats && currentProfile.riot_name && (
+                  {!currentProfile.stats && currentProfile.riot_name && statsLoading.has(currentProfile.id) && (
                     <p className="text-[10px] text-center" style={{ color: "#444" }}>Stats werden geladen…</p>
                   )}
                   {/* Agent mains under stats if present */}
