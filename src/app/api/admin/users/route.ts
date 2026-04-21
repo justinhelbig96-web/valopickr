@@ -70,7 +70,10 @@ export async function DELETE(req: Request) {
   if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 })
 
   const sb = makeServiceClient()
-  await sb.from("swipes").delete().or(`from_user_id.eq.${userId},to_user_id.eq.${userId}`)
+  await Promise.all([
+    sb.from("swipes").delete().or(`from_user_id.eq.${userId},to_user_id.eq.${userId}`),
+    sb.from("matches").delete().or(`user1_id.eq.${userId},user2_id.eq.${userId}`),
+  ])
 
   return NextResponse.json({ ok: true })
 }
