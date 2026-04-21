@@ -253,12 +253,12 @@ export default function DiscoverPage() {
   const compatScore = myProfile && currentProfile ? getCompatScore(myProfile, currentProfile) : null
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "var(--background)" }}>
+    <div className="flex flex-col min-h-screen dot-grid-red" style={{ background: "var(--background)" }}>
       <PushSetup />
       {/* Header */}
-      <header className="flex items-center justify-between px-5 py-3.5 border-b glass sticky top-0 z-50"
+      <header className="flex items-center justify-between px-5 py-3.5 glass sticky top-0 z-50"
         style={{ borderColor: "var(--border)" }}>
-        <Link href="/" className="font-black tracking-tighter text-xl shimmer-text">VALOPICKR</Link>
+        <Link href="/" className="font-bebas text-2xl tracking-widest shimmer-text glow-text-red">VALOPICKR</Link>
         <div className="flex items-center gap-2">
           <Link href="/matches" className="p-2.5 rounded-xl relative"
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
@@ -293,24 +293,27 @@ export default function DiscoverPage() {
       {(() => {
         const activeCount = [rankFilter.min !== "iron" || rankFilter.max !== "radiant", rankFilter.regions.length > 0, rankFilter.playstyles.length > 0, rankFilter.languages.length > 0].filter(Boolean).length
         return (
-          <div className="flex items-center px-4 py-2.5 border-b" style={{ borderColor: "var(--border)" }}>
-            <button
-              onClick={() => setShowFilters(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
-              style={activeCount > 0
-                ? { background: "rgba(255,70,85,0.12)", border: "1px solid rgba(255,70,85,0.4)", color: "var(--accent)" }
-                : { background: "var(--card)", border: "1px solid var(--border)", color: "#aaa" }
-              }
-            >
-              <SlidersHorizontal size={15} />
-              Filter
-              {activeCount > 0 && (
-                <span className="text-xs font-black px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#fff", fontSize: 10 }}>
-                  {activeCount}
-                </span>
-              )}
-            </button>
-          </div>
+          <>
+            <div className="header-accent-line" />
+            <div className="flex items-center px-4 py-2.5 border-b" style={{ borderColor: "var(--border)", background: "rgba(10,10,18,0.7)" }}>
+              <button
+                onClick={() => setShowFilters(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
+                style={activeCount > 0
+                  ? { background: "rgba(255,70,85,0.12)", border: "1px solid rgba(255,70,85,0.4)", color: "var(--accent)" }
+                  : { background: "var(--card)", border: "1px solid var(--border)", color: "#aaa" }
+                }
+              >
+                <SlidersHorizontal size={15} />
+                Filter
+                {activeCount > 0 && (
+                  <span className="text-xs font-black px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#fff", fontSize: 10 }}>
+                    {activeCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </>
         )
       })()}
 

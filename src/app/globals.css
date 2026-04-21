@@ -98,6 +98,23 @@ body {
   background-size: 40px 40px;
 }
 
+/* Dot-grid overlay */
+.dot-grid-red {
+  background-image: radial-gradient(rgba(255,70,85,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Red glow text */
+.glow-text-red {
+  text-shadow: 0 0 28px rgba(255,70,85,0.65), 0 0 56px rgba(255,70,85,0.28);
+}
+
+/* Thin accent line (header bottom) */
+.header-accent-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,70,85,0.55) 30%, rgba(255,150,158,0.9) 50%, rgba(255,70,85,0.55) 70%, transparent 100%);
+}
+
 /* ===== Custom Font Utilities ===== */
 .font-bebas { font-family: var(--font-bebas), 'Impact', 'Arial Black', sans-serif; }
 .font-rajdhani { font-family: var(--font-rajdhani), 'Segoe UI', sans-serif; letter-spacing: 0.02em; }
@@ -137,12 +154,12 @@ body {
 }
 
 .card-hover {
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-bright) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(-6px);
+  border-color: rgba(255,70,85,0.3) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 28px rgba(255,70,85,0.1);
 }
 
 .btn-primary {

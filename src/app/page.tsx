@@ -287,6 +287,44 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* Stats Counter — full-width strip right after hero */}
+      <section className="relative w-full" style={{ zIndex: 1 }}>
+        <div className="header-accent-line" />
+        <div className="relative overflow-hidden" style={{ background: "#0a0a12", borderBottom: "1px solid var(--border)" }}>
+          <div className="dot-grid-red absolute inset-0 pointer-events-none opacity-60" />
+          <div className="relative max-w-5xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-0">
+            {[
+              { value: userCount, suffix: "", label: "Registered Players", icon: "👥" },
+              { value: 9, suffix: "", label: "Rank Tiers", icon: "🏆" },
+              { value: 100, suffix: "%", label: "Free to Use", icon: "⚡" },
+              { value: 4, suffix: " Regions", label: "EU · NA · AP · KR", icon: "🌍" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.45 }}
+                className="flex flex-col items-center text-center py-2 px-4"
+                style={{ borderRight: i < 3 ? "1px solid var(--border)" : "none" }}
+              >
+                <span className="text-2xl mb-1">{stat.icon}</span>
+                <p className="stat-number text-4xl md:text-5xl mb-1">
+                  {stat.value > 0
+                    ? <CountUp target={stat.value} suffix={stat.suffix} />
+                    : <span style={{ color: "#333" }}>…</span>
+                  }
+                </p>
+                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#555" }}>
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        <div className="header-accent-line" />
+      </section>
+
       {/* How it works */}
       <section className="relative px-4 py-28 max-w-5xl mx-auto w-full" style={{ zIndex: 1 }}>
         <div className="text-center mb-16">
@@ -317,43 +355,6 @@ export default function HomePage() {
             )
           })}
         </div>
-      </section>
-
-      {/* Stats Counter — between steps and CTA */}
-      <section className="relative px-4 py-16" style={{ zIndex: 1 }}>
-        <div className="section-divider mb-14" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto flex flex-wrap justify-center gap-12 md:gap-20"
-        >
-          {[
-            { value: userCount, suffix: "", label: "Registered Players" },
-            { value: 9, suffix: "", label: "Rank Tiers" },
-            { value: 100, suffix: "%", label: "Free to Use" },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.13, duration: 0.4 }}
-              className="text-center"
-            >
-              <p className="stat-number text-5xl md:text-7xl">
-                {stat.value > 0
-                  ? <CountUp target={stat.value} suffix={stat.suffix} />
-                  : <span>…</span>
-                }
-              </p>
-              <p className="text-xs font-semibold uppercase tracking-widest mt-2" style={{ color: "var(--muted)" }}>
-                {stat.label}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-        <div className="section-divider mt-14" />
       </section>
 
       {/* CTA Banner */}
