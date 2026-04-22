@@ -168,7 +168,7 @@ export default function HomePage() {
             style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
             <span className="text-[11px] font-semibold" style={{ color: "#22c55e" }}>
-              {onlineCount > 0 ? onlineCount : "—"}
+              {onlineCount}
             </span>
           </div>
         </motion.div>
