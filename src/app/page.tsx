@@ -59,10 +59,13 @@ function CountUp({ target, suffix = "", duration = 1.5 }: { target: number; suff
   return <span ref={ref}>0{suffix}</span>
 }
 
+import { createClient } from "@/lib/supabase/client"
+
 export default function HomePage() {
   const rankIcons = useRankIcons()
   const { locale, setLocale, t } = useLanguage()
   const [userCount, setUserCount] = useState(0)
+  const [onlineCount, setOnlineCount] = useState(0)
   const [wordIndex, setWordIndex] = useState(0)
   const STEP_ICONS = [Shield, Zap, Users]
   const STEP_COLORS = ["#ff4655", "#FFD700", "#00FF7F"]
@@ -73,6 +76,23 @@ export default function HomePage() {
       .then((r) => r.json())
       .then((d) => { if (d.count > 0) setUserCount(d.count) })
       .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    async function fetchOnline() {
+      try {
+        const supabase = createClient()
+        const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+        const { count } = await supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .gt("last_seen", fiveMinAgo)
+        setOnlineCount(count ?? 0)
+      } catch { /* ignore */ }
+    }
+    fetchOnline()
+    const id = setInterval(fetchOnline, 60_000)
+    return () => clearInterval(id)
   }, [])
 
   useEffect(() => {
@@ -143,6 +163,14 @@ export default function HomePage() {
             <span style={{ color: "var(--accent)" }}>VALO</span>
             <span style={{ color: "var(--foreground)" }}>PICKR</span>
           </span>
+          {/* Live online counter */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl ml-1"
+            style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-[11px] font-semibold" style={{ color: "#22c55e" }}>
+              {onlineCount > 0 ? onlineCount : "—"}
+            </span>
+          </div>
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
           className="flex items-center gap-3">
