@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useState } from "react"
 import { type Locale, translations } from "@/lib/translations"
 
 interface LanguageContextType {
@@ -16,12 +16,11 @@ const LanguageContext = createContext<LanguageContextType>({
 })
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en")
-
-  useEffect(() => {
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window === "undefined") return "en"
     const stored = localStorage.getItem("valopickr_locale") as Locale | null
-    if (stored && stored in translations) setLocaleState(stored)
-  }, [])
+    return stored && stored in translations ? stored : "en"
+  })
 
   function setLocale(l: Locale) {
     setLocaleState(l)
