@@ -26,7 +26,29 @@ const rajdhani = Rajdhani({
 
 export const metadata: Metadata = {
   title: "ValoPickr — Find your Valorant Teammate",
-  description: "Find the perfect Valorant teammate. Filter by rank, swipe, match and play.",
+  description: "Tinder for Valorant. Swipe on players, match by rank & playstyle, and find your perfect duo partner.",
+  metadataBase: new URL("https://valopickr.vercel.app"),
+  openGraph: {
+    title: "ValoPickr — Find your Valorant Duo Partner",
+    description: "Tinder for Valorant. Swipe on players, match by rank & playstyle, and find your perfect duo partner.",
+    url: "https://valopickr.vercel.app",
+    siteName: "ValoPickr",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "ValoPickr — Tinder for Valorant",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ValoPickr — Find your Valorant Duo Partner",
+    description: "Tinder for Valorant. Swipe on players, match by rank & playstyle, and find your perfect duo partner.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
