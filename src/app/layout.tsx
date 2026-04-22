@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   title: "ValoPickr — Find your Valorant Teammate",
   description: "Tinder for Valorant. Swipe on players, match by rank & playstyle, and find your perfect duo partner.",
   metadataBase: new URL("https://valopickr.vercel.app"),
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "ValoPickr — Find your Valorant Duo Partner",
     description: "Tinder for Valorant. Swipe on players, match by rank & playstyle, and find your perfect duo partner.",
